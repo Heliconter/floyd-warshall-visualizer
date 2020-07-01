@@ -15,4 +15,4 @@ javafx {
     modules = [ 'javafx.controls' ]
 }
 
-mainClassName = 'floydwarshall.gui.Main'
+mainClassName = 'floydwarshall.Main'

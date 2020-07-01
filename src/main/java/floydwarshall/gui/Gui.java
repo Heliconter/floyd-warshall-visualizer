@@ -1,7 +1,6 @@
 package floydwarshall.gui;
 
 import floydwarshall.executor.ExecutorInterface;
-import javafx.application.Application;
 import javafx.geometry.Insets;
 import javafx.scene.Group;
 import javafx.scene.Scene;
@@ -9,8 +8,7 @@ import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 
-public class Gui extends Application {
-    @Override
+public class Gui {
     public void start(Stage primaryStage) throws Exception {
         GraphView graphView = new GraphView();
         AlgorithmMatrixView algorithmMatrixView = new AlgorithmMatrixView();
