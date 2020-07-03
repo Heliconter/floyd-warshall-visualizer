@@ -12,7 +12,7 @@ public class Executor implements ExecutorInterface {
 
     private Stack<Integer> history;
 
-    private ArrayList<ExecutorStepObserver> observers;
+    private ArrayList<ExecutorObserver> observers;
 
     public Executor() {
         matrix = new Integer[0][0];
@@ -26,7 +26,7 @@ public class Executor implements ExecutorInterface {
         to = 0;
         this.verticesAmount = verticesAmount;
         history = new Stack<Integer>();
-        observers = new ArrayList<ExecutorStepObserver>();
+        observers = new ArrayList<ExecutorObserver>();
 
         matrix = new Integer[verticesAmount][verticesAmount];
 
@@ -70,7 +70,7 @@ public class Executor implements ExecutorInterface {
         return k == verticesAmount;
     };
 
-    public void addObserver(ExecutorStepObserver observer) {
+    public void addObserver(ExecutorObserver observer) {
         observers.add(observer);
     };
 
@@ -90,8 +90,8 @@ public class Executor implements ExecutorInterface {
             nextCell();
 
             // notify observers
-            for (ExecutorStepObserver observer : observers) {
-                observer.stepExecuted(new PathEnds(from, to));
+            for (ExecutorObserver observer : observers) {
+                observer.stateChanged();
             }
         }
     }
@@ -105,8 +105,8 @@ public class Executor implements ExecutorInterface {
             matrix[from][to] = history.pop();
 
             // notify observers
-            for (ExecutorStepObserver observer : observers) {
-                observer.stepExecuted(new PathEnds(from, to));
+            for (ExecutorObserver observer : observers) {
+                observer.stateChanged();
             }
         }
     }

@@ -6,5 +6,5 @@ public interface ExecutorInterface {
     void step(int amount);
     void toEnd();
     boolean isFinished();
-    void addObserver(ExecutorStepObserver observer);
+    void addObserver(ExecutorObserver observer);
 }
