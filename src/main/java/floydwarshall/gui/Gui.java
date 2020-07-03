@@ -9,29 +9,27 @@ import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 
 public class Gui {
+    public final int PADDING = 10;
+
     public void start(Stage primaryStage) throws Exception {
         GraphView graphView = new GraphView();
         AlgorithmMatrixView algorithmMatrixView = new AlgorithmMatrixView();
         AlgorithmControlView algorithmControlView = new AlgorithmControlView();
-        GraphSavingControlView graphSavingControlView = new GraphSavingControlView();
 
-        Region pusher = new Region();
-        HBox.setHgrow(pusher, Priority.ALWAYS);
+        Region vPusher = new Region();
+        VBox.setVgrow(vPusher, Priority.ALWAYS);
 
-        HBox viewsLayout = new HBox(graphView, algorithmMatrixView);
-        HBox controlsLayout = new HBox(graphSavingControlView, pusher, algorithmControlView);
-        VBox mainLayout = new VBox(viewsLayout, controlsLayout);
+        VBox algorithmLayout = new VBox(algorithmMatrixView, vPusher, algorithmControlView);
+        HBox mainLayout = new HBox(graphView, algorithmLayout);
         Group root = new Group(mainLayout);
 
-        mainLayout.setPadding(new Insets(10));
-        mainLayout.setSpacing(10);
-        viewsLayout.setSpacing(10);
-        controlsLayout.setSpacing(10);
+        mainLayout.setPadding(new Insets(PADDING));
+        mainLayout.setSpacing(PADDING);
+        algorithmLayout.setSpacing(PADDING);
 
         final Border border = new Border(new BorderStroke(Color.BLACK, BorderStrokeStyle.SOLID, CornerRadii.EMPTY, BorderWidths.DEFAULT));
         graphView.setBorder(border);
-        algorithmMatrixView.setBorder(border);
-        controlsLayout.setBorder(border);
+        algorithmLayout.setBorder(border);
 
         Scene scene = new Scene(root);
 
