@@ -246,9 +246,9 @@ public class GraphView extends Region {
             }
             if (state == PROGRAM_STATE.DRAG) {
                 if (isDragState) {
+                    dragNode.setAffectedByGravity(true);
                     dragNode = null;
                     isDragState = false;
-                    dragNode.setAffectedByGravity(true);
                 }
             }
             if (state == PROGRAM_STATE.DELETE_LINES) {
