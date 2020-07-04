@@ -60,10 +60,14 @@ public class GravitySimulation {
         }
 
         // update velocities
-        point1.setDX(point1.getDX() + attraction_force * dx / vector_size);
-        point1.setDY(point1.getDY() + attraction_force * dy / vector_size);
-        point2.setDX(point2.getDX() - attraction_force * dx / vector_size);
-        point2.setDY(point2.getDY() - attraction_force * dy / vector_size);
+        if (point1.getAffectedByGravity()) {
+            point1.setDX(point1.getDX() + attraction_force * dx / vector_size);
+            point1.setDY(point1.getDY() + attraction_force * dy / vector_size);
+        }
+        if (point2.getAffectedByGravity()) {
+            point2.setDX(point2.getDX() - attraction_force * dx / vector_size);
+            point2.setDY(point2.getDY() - attraction_force * dy / vector_size);
+        }
     }
 
     private void calculateAttractions(ArrayList<? extends Point> points) {
