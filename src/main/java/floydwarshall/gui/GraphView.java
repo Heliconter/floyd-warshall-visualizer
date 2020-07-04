@@ -5,6 +5,7 @@ import javafx.geometry.Point2D;
 import javafx.geometry.Pos;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
+import javafx.scene.control.ScrollPane;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
@@ -14,7 +15,7 @@ import floydwarshall.MyShape.MyNode;
 
 import java.util.ArrayList;
 
-public class GraphView  extends Region {
+public class GraphView extends ScrollPane {
 
 //    private Group group_for_shapes = new Group();
     enum PROGRAM_STATE {ADD, DRAG, DELETE, ADD_LINES, DELETE_LINES}
@@ -25,6 +26,8 @@ public class GraphView  extends Region {
     private boolean isChouseNodeFirstForAddLines = false;
     private boolean isDragState = false;
     private boolean isDeleteState = false;
+
+    private Pane pane = new Pane();
 
     private ArrayList<MyNode> lisNodes = new ArrayList<>();
 
@@ -45,7 +48,7 @@ public class GraphView  extends Region {
 
         /*minWidth(500);
         minHeight(500);*/
-
+        setContent(pane);
 
         Button button = new Button("add");
         Button button2 = new Button("drag");
@@ -91,13 +94,13 @@ public class GraphView  extends Region {
             }
         });
 
-        getChildren().addAll(button, button2, button3, button4, button5);
+        pane.getChildren().addAll(button, button2, button3, button4, button5);
 
         this.setOnMousePressed((MouseEvent event) ->
         {
             if (state == PROGRAM_STATE.ADD) {
                 MyNode node = new MyNode(event.getX(), event.getY());
-                getChildren().addAll(node.getEllipse(), node.getText()/*,node.getTriangle()*/);
+                pane.getChildren().addAll(node.getEllipse(), node.getText()/*,node.getTriangle()*/);
                 lisNodes.add(node);
             }
             if (state == PROGRAM_STATE.DELETE) {
@@ -121,7 +124,7 @@ public class GraphView  extends Region {
                         line.setStroke(Color.BLACK);
                         line.setStrokeWidth(1);
                         node.addLineStartPoint(line);
-                        getChildren().add(line);
+                        pane.getChildren().add(line);
                         currentLine = line;
                         isChouseNodeFirstForAddLines = true;
                         node.drawFront();
@@ -147,7 +150,7 @@ public class GraphView  extends Region {
 
         });
 
-        this.setOnMouseDragged((MouseEvent event) -> {
+        pane.setOnMouseDragged((MouseEvent event) -> {
             if (state == PROGRAM_STATE.DRAG) {
 
                 if (isDragState && dragNode != null) {
@@ -170,8 +173,8 @@ public class GraphView  extends Region {
                         }
                     }
                     for (MyLine line : deleteLine) {
-                        getChildren().remove(line);
-                        getChildren().remove(line.getTriangle());
+                        pane.getChildren().remove(line);
+                        pane.getChildren().remove(line.getTriangle());
                         listLines.remove(line);
                         MyNode node1 = findDragEllipse(line.getStartX(), line.getStartY());
                         MyNode node2 = findDragEllipse(line.getEndX(), line.getEndY());
@@ -206,12 +209,12 @@ public class GraphView  extends Region {
                             currentLine.setTriangle();
                             setConvexOnLines(currentLine);
                             listLines.add(currentLine);
-                            getChildren().add(currentLine.getTriangle());
+                            pane.getChildren().add(currentLine.getTriangle());
                             currentLine = null;
                             isChouseNodeFirstForAddLines = false;
                             node.drawFront();
                         } else {
-                            getChildren().remove(currentLine);
+                            pane.getChildren().remove(currentLine);
                             currentLine = null;
                             isChouseNodeFirstForAddLines = false;
                         }
@@ -233,15 +236,15 @@ public class GraphView  extends Region {
     }
 
     private void deleteNode(MyNode node) {
-        getChildren().remove(node.getEllipse());
-        getChildren().remove(node.getText());
+        pane.getChildren().remove(node.getEllipse());
+        pane.getChildren().remove(node.getText());
         for (MyLine line : node.getLinesStartPoint()) {
-            getChildren().remove(line);
-            getChildren().remove(line.getTriangle());
+            pane.getChildren().remove(line);
+            pane.getChildren().remove(line.getTriangle());
         }
         for (MyLine line : node.getLinesEndPoint()) {
-            getChildren().remove(line);
-            getChildren().remove(line.getTriangle());
+            pane.getChildren().remove(line);
+            pane.getChildren().remove(line.getTriangle());
 
         }
     }
