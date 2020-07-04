@@ -1,12 +1,17 @@
 package floydwarshall.gui;
 
 import javafx.event.EventHandler;
+import javafx.event.ActionEvent;
 import javafx.geometry.Point2D;
 import javafx.scene.control.Button;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
+import javafx.animation.KeyFrame;
+import javafx.animation.Timeline;
+import javafx.util.Duration;
+import floydwarshall.gravity.GravitySimulation;
 import floydwarshall.gui.graphshapes.Line;
 import floydwarshall.gui.graphshapes.Math;
 import floydwarshall.gui.graphshapes.Node;
@@ -24,6 +29,8 @@ public class GraphView extends Region {
     private boolean isChouseNodeFirstForAddLines = false;
     private boolean isDragState = false;
     private boolean isDeleteState = false;
+
+    private GravitySimulation gravitySimulation;
 
     private Pane pane;
     private ScrollPane scrollPane;
@@ -47,6 +54,7 @@ public class GraphView extends Region {
 
         /*minWidth(500);
         minHeight(500);*/
+        gravitySimulation = new GravitySimulation();
 
         pane = new Pane();
         pane.setPrefWidth(700);
@@ -110,6 +118,7 @@ public class GraphView extends Region {
                 Node node = new Node(event.getX(), event.getY());
                 pane.getChildren().addAll(node.getEllipse(), node.getText()/*,node.getTriangle()*/);
                 lisNodes.add(node);
+                gravitySimulation.updateAdjacencyMatrix(lisNodes, listLines);
             }
             if (state == PROGRAM_STATE.DELETE) {
                 if (lisNodes.size() > 0) {
@@ -118,6 +127,7 @@ public class GraphView extends Region {
                         //node.deleteNode(this);
                         deleteNode(node);
                         lisNodes.remove(node);
+                        gravitySimulation.updateAdjacencyMatrix(lisNodes, listLines);
                     }
                 }
             }
@@ -131,6 +141,7 @@ public class GraphView extends Region {
                         line.setFill(null);
                         line.setStroke(Color.BLACK);
                         line.setStrokeWidth(1);
+                        line.setFromNode(node);
                         node.addLineStartPoint(line);
                         pane.getChildren().add(line);
                         currentLine = line;
@@ -145,6 +156,7 @@ public class GraphView extends Region {
                         Node node = findDragEllipse(event.getX(), event.getY());
                         if (node != null) {
                             dragNode = node;
+                            dragNode.setAffectedByGravity(false);
                             isDragState = true;
                         }
                     }
@@ -184,6 +196,7 @@ public class GraphView extends Region {
                         pane.getChildren().remove(line);
                         pane.getChildren().remove(line.getTriangle());
                         listLines.remove(line);
+                        gravitySimulation.updateAdjacencyMatrix(lisNodes, listLines);
                         Node node1 = findDragEllipse(line.getStartX(), line.getStartY());
                         Node node2 = findDragEllipse(line.getEndX(), line.getEndY());
                         if (node1 != null) {
@@ -212,6 +225,7 @@ public class GraphView extends Region {
                     if (lisNodes.size() > 0) {
                         Node node = findDragEllipse(event.getX(), event.getY());
                         if (node != null && !isDublicateLine(currentLine, new Point2D(node.getEllipse().getCenterX(), node.getEllipse().getCenterY()))) {
+                            currentLine.setToNode(node);
                             node.addLineEndPoint(currentLine);
                             updateLineEndPoint(node.getEllipse().getCenterX(), node.getEllipse().getCenterY(), currentLine);
                             currentLine.setTriangle();
@@ -221,6 +235,7 @@ public class GraphView extends Region {
                             currentLine = null;
                             isChouseNodeFirstForAddLines = false;
                             node.drawFront();
+                            gravitySimulation.updateAdjacencyMatrix(lisNodes, listLines);
                         } else {
                             pane.getChildren().remove(currentLine);
                             currentLine = null;
@@ -233,6 +248,7 @@ public class GraphView extends Region {
                 if (isDragState) {
                     dragNode = null;
                     isDragState = false;
+                    dragNode.setAffectedByGravity(true);
                 }
             }
             if (state == PROGRAM_STATE.DELETE_LINES) {
@@ -241,6 +257,17 @@ public class GraphView extends Region {
                 }
             }
         });
+
+        Timeline timer = new Timeline(
+                new KeyFrame(Duration.millis(1000 / 30), new EventHandler<ActionEvent>() {
+                    @Override
+                    public void handle(ActionEvent event) {
+                        gravitySimulation.simulationStep(lisNodes);
+                    }
+                }));
+        timer.setCycleCount(Timeline.INDEFINITE);
+        timer.play();
+
     }
 
     private void deleteNode(Node node) {
