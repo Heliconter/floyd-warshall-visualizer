@@ -2,16 +2,14 @@ package floydwarshall.gui;
 
 import javafx.event.EventHandler;
 import javafx.geometry.Point2D;
-import javafx.geometry.Pos;
 import javafx.scene.control.Button;
-import javafx.scene.control.Label;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
-import floydwarshall.MyShape.MyLine;
-import floydwarshall.MyShape.MyMath;
-import floydwarshall.MyShape.MyNode;
+import floydwarshall.gui.graphshapes.Line;
+import floydwarshall.gui.graphshapes.Math;
+import floydwarshall.gui.graphshapes.Node;
 
 import java.util.ArrayList;
 
@@ -20,16 +18,16 @@ public class GraphView extends ScrollPane {
 //    private Group group_for_shapes = new Group();
     enum PROGRAM_STATE {ADD, DRAG, DELETE, ADD_LINES, DELETE_LINES}
     private PROGRAM_STATE state = PROGRAM_STATE.ADD;
-    private MyNode dragNode = null;
-    private ArrayList<MyLine> listLines = new ArrayList<>();
-    private MyLine currentLine = null;
+    private Node dragNode = null;
+    private ArrayList<Line> listLines = new ArrayList<>();
+    private Line currentLine = null;
     private boolean isChouseNodeFirstForAddLines = false;
     private boolean isDragState = false;
     private boolean isDeleteState = false;
 
     private Pane pane = new Pane();
 
-    private ArrayList<MyNode> lisNodes = new ArrayList<>();
+    private ArrayList<Node> lisNodes = new ArrayList<>();
 
     public GraphView() {
        /* Label graphPlaceholder = new Label("Graph placeholder"); // TODO
@@ -99,13 +97,13 @@ public class GraphView extends ScrollPane {
         this.setOnMousePressed((MouseEvent event) ->
         {
             if (state == PROGRAM_STATE.ADD) {
-                MyNode node = new MyNode(event.getX(), event.getY());
+                Node node = new Node(event.getX(), event.getY());
                 pane.getChildren().addAll(node.getEllipse(), node.getText()/*,node.getTriangle()*/);
                 lisNodes.add(node);
             }
             if (state == PROGRAM_STATE.DELETE) {
                 if (lisNodes.size() > 0) {
-                    MyNode node = findDragEllipse(event.getX(), event.getY());
+                    Node node = findDragEllipse(event.getX(), event.getY());
                     if (node != null) {
                         //node.deleteNode(this);
                         deleteNode(node);
@@ -115,9 +113,9 @@ public class GraphView extends ScrollPane {
             }
             if (state == PROGRAM_STATE.ADD_LINES) {
                 if (!isChouseNodeFirstForAddLines) {
-                    MyNode node = findDragEllipse(event.getX(), event.getY());
+                    Node node = findDragEllipse(event.getX(), event.getY());
                     if (node != null) {
-                        MyLine line = new MyLine(node.getEllipse().getCenterX(), node.getEllipse().getCenterY(),
+                        Line line = new Line(node.getEllipse().getCenterX(), node.getEllipse().getCenterY(),
                                 node.getEllipse().getCenterX(), node.getEllipse().getCenterY(),
                                 node.getEllipse().getCenterX(), node.getEllipse().getCenterY());
                         line.setFill(null);
@@ -134,7 +132,7 @@ public class GraphView extends ScrollPane {
             if (state == PROGRAM_STATE.DRAG) {
                 if (!isDragState) {
                     if (lisNodes.size() > 0) {
-                        MyNode node = findDragEllipse(event.getX(), event.getY());
+                        Node node = findDragEllipse(event.getX(), event.getY());
                         if (node != null) {
                             dragNode = node;
                             isDragState = true;
@@ -166,18 +164,18 @@ public class GraphView extends ScrollPane {
                 if (listLines.size() > 0) {
                     double x = event.getSceneX();
                     double y = event.getSceneY();
-                    ArrayList<MyLine> deleteLine = new ArrayList<>();
-                    for (MyLine line : listLines) {
-                        if (MyMath.isDeleteLine(line, x, y)) {
+                    ArrayList<Line> deleteLine = new ArrayList<>();
+                    for (Line line : listLines) {
+                        if (Math.isDeleteLine(line, x, y)) {
                             deleteLine.add(line);
                         }
                     }
-                    for (MyLine line : deleteLine) {
+                    for (Line line : deleteLine) {
                         pane.getChildren().remove(line);
                         pane.getChildren().remove(line.getTriangle());
                         listLines.remove(line);
-                        MyNode node1 = findDragEllipse(line.getStartX(), line.getStartY());
-                        MyNode node2 = findDragEllipse(line.getEndX(), line.getEndY());
+                        Node node1 = findDragEllipse(line.getStartX(), line.getStartY());
+                        Node node2 = findDragEllipse(line.getEndX(), line.getEndY());
                         if (node1 != null) {
                             node1.popLineStartPoint(line);
                         }
@@ -185,7 +183,7 @@ public class GraphView extends ScrollPane {
                             node2.popLineEndPoint(line);
                         }
                         if (line.isConvex()) {
-                            MyLine inverse = isIverseLine(line);
+                            Line inverse = isIverseLine(line);
                             if (inverse != null) {
                                 inverse.setControlX(inverse.getStartX());
                                 inverse.setControlY(inverse.getStartY());
@@ -202,7 +200,7 @@ public class GraphView extends ScrollPane {
             if (state == PROGRAM_STATE.ADD_LINES) {
                 if (isChouseNodeFirstForAddLines) {
                     if (lisNodes.size() > 0) {
-                        MyNode node = findDragEllipse(event.getX(), event.getY());
+                        Node node = findDragEllipse(event.getX(), event.getY());
                         if (node != null && !isDublicateLine(currentLine, new Point2D(node.getEllipse().getCenterX(), node.getEllipse().getCenterY()))) {
                             node.addLineEndPoint(currentLine);
                             updateLineEndPoint(node.getEllipse().getCenterX(), node.getEllipse().getCenterY(), currentLine);
@@ -235,14 +233,14 @@ public class GraphView extends ScrollPane {
         });
     }
 
-    private void deleteNode(MyNode node) {
+    private void deleteNode(Node node) {
         pane.getChildren().remove(node.getEllipse());
         pane.getChildren().remove(node.getText());
-        for (MyLine line : node.getLinesStartPoint()) {
+        for (Line line : node.getLinesStartPoint()) {
             pane.getChildren().remove(line);
             pane.getChildren().remove(line.getTriangle());
         }
-        for (MyLine line : node.getLinesEndPoint()) {
+        for (Line line : node.getLinesEndPoint()) {
             pane.getChildren().remove(line);
             pane.getChildren().remove(line.getTriangle());
 
@@ -251,16 +249,16 @@ public class GraphView extends ScrollPane {
 
     private void updateLineEndPoint(double end_x,
                                     double end_y,
-                                    MyLine line) {
+                                    Line line) {
         line.setEndX(end_x);
         line.setEndY(end_y);
     }
 
-    private MyNode findDragEllipse(double x, double y) {
-        MyNode node = null;
+    private Node findDragEllipse(double x, double y) {
+        Node node = null;
         double min = 1000000;
-        for (MyNode el : lisNodes) {
-            double localMin = (Math.abs(el.getEllipse().getCenterX() - x) + Math.abs(el.getEllipse().getCenterY() - y));
+        for (Node el : lisNodes) {
+            double localMin = (java.lang.Math.abs(el.getEllipse().getCenterX() - x) + java.lang.Math.abs(el.getEllipse().getCenterY() - y));
             if (localMin < min) {
                 min = localMin;
                 node = el;
@@ -273,13 +271,13 @@ public class GraphView extends ScrollPane {
         }
     }
 
-    private void setConvexOnLines(MyLine line) {
-        for (MyLine cur : listLines) {
+    private void setConvexOnLines(Line line) {
+        for (Line cur : listLines) {
             if (line.getStartX() == cur.getEndX() && line.getStartY() == cur.getEndY() &&
                     line.getEndX() == cur.getStartX() && line.getEndY() == cur.getStartY()) {
                 line.setConvex(true);
                 cur.setConvex(true);
-                MyMath.setControlPoint(line, cur);
+                Math.setControlPoint(line, cur);
                 line.updateTriangle();
                 cur.updateTriangle();
                 break;
@@ -287,9 +285,9 @@ public class GraphView extends ScrollPane {
         }
     }
 
-    private boolean isDublicateLine(MyLine line, Point2D point) {
+    private boolean isDublicateLine(Line line, Point2D point) {
 
-        for (MyLine cur : listLines) {
+        for (Line cur : listLines) {
             if (cur.getStartX() == line.getStartX() && cur.getStartY() == line.getStartY() &&
                     cur.getEndX() == point.getX() && cur.getEndY() == point.getY()) {
                 return true;
@@ -299,9 +297,9 @@ public class GraphView extends ScrollPane {
         return false;
     }
 
-    private MyLine isIverseLine(MyLine line) {
+    private Line isIverseLine(Line line) {
 
-        for (MyLine cur : listLines) {
+        for (Line cur : listLines) {
             if (cur.getStartX() == line.getEndX() && cur.getStartY() == line.getEndY() &&
                     cur.getEndX() == line.getStartX() && cur.getEndY() == line.getStartY()) {
                 return cur;

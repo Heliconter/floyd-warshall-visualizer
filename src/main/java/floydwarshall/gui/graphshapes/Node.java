@@ -1,4 +1,4 @@
-package floydwarshall.MyShape;
+package floydwarshall.gui.graphshapes;
 
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Ellipse;
@@ -6,15 +6,15 @@ import javafx.scene.text.Text;
 
 import java.util.ArrayList;
 
-public class MyNode {
+public class Node {
 
     private Ellipse ellipse;
-    private ArrayList<MyLine> linesStartPoint;
-    private ArrayList<MyLine> linesEndPoint;
+    private ArrayList<Line> linesStartPoint;
+    private ArrayList<Line> linesEndPoint;
     private Text text;
     public static final int radius = 10;
 
-    public MyNode(double centerX, double centerY) {
+    public Node(double centerX, double centerY) {
         ellipse = new Ellipse();
         ellipse.setCenterX(centerX);
         ellipse.setCenterY(centerY);
@@ -34,7 +34,7 @@ public class MyNode {
         ellipse.setCenterY(centerY);
         text.setX(centerX-4);   // для выравнивания
         text.setY(centerY+3);   // для выравнивания
-        for (MyLine line : linesStartPoint) {
+        for (Line line : linesStartPoint) {
             line.setStartX(centerX);
             line.setStartY(centerY);
             line.updateTriangle();
@@ -42,15 +42,15 @@ public class MyNode {
                 line.setControlX(centerX);
                 line.setControlY(centerY);
             }else {
-                MyMath.setControlPointForOnlyLine(line);
+                Math.setControlPointForOnlyLine(line);
             }
         }
-        for (MyLine line : linesEndPoint) {
+        for (Line line : linesEndPoint) {
             line.setEndX(centerX);
             line.setEndY(centerY);
             line.updateTriangle();
             if (line.isConvex()){
-                MyMath.setControlPointForOnlyLine(line);
+                Math.setControlPointForOnlyLine(line);
             }
         }
     }
@@ -63,29 +63,29 @@ public class MyNode {
         return text;
     }
 
-    public ArrayList<MyLine> getLinesStartPoint() {
+    public ArrayList<Line> getLinesStartPoint() {
         return linesStartPoint;
     }
 
-    public ArrayList<MyLine> getLinesEndPoint() {
+    public ArrayList<Line> getLinesEndPoint() {
         return linesEndPoint;
     }
 
-    public void addLineStartPoint(MyLine line){
+    public void addLineStartPoint(Line line){
         linesStartPoint.add(line);
     }
 
-    public void addLineEndPoint(MyLine line){
+    public void addLineEndPoint(Line line){
         linesEndPoint.add(line);
     }
 
-    public void popLineStartPoint(MyLine line) {
+    public void popLineStartPoint(Line line) {
         if (line!=null) {
             linesStartPoint.remove(line);
         }
     }
 
-    public void popLineEndPoint(MyLine line){
+    public void popLineEndPoint(Line line){
         if (line!=null) {
             linesEndPoint.remove(line);
         }

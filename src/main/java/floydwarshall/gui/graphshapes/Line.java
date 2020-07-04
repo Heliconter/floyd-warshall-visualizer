@@ -1,8 +1,8 @@
-package floydwarshall.MyShape;
+package floydwarshall.gui.graphshapes;
 
 import javafx.scene.shape.QuadCurve;
 
-public class MyLine extends QuadCurve {
+public class Line extends QuadCurve {
     private boolean isConvex = false;
     private Triangle triangle = null;
 
@@ -10,7 +10,7 @@ public class MyLine extends QuadCurve {
         return triangle;
     }
 
-    public MyLine(double centerX, double centerY, double centerX1, double centerY1, double centerX2, double centerY2) {
+    public Line(double centerX, double centerY, double centerX1, double centerY1, double centerX2, double centerY2) {
         super(centerX, centerY, centerX1, centerY1, centerX2, centerY2);
     }
 
