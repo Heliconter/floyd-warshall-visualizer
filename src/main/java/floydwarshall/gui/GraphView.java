@@ -13,7 +13,7 @@ import floydwarshall.gui.graphshapes.Node;
 
 import java.util.ArrayList;
 
-public class GraphView extends ScrollPane {
+public class GraphView extends Region {
 
 //    private Group group_for_shapes = new Group();
     enum PROGRAM_STATE {ADD, DRAG, DELETE, ADD_LINES, DELETE_LINES}
@@ -25,7 +25,8 @@ public class GraphView extends ScrollPane {
     private boolean isDragState = false;
     private boolean isDeleteState = false;
 
-    private Pane pane = new Pane();
+    private Pane pane;
+    private ScrollPane scrollPane;
 
     private ArrayList<Node> lisNodes = new ArrayList<>();
 
@@ -46,7 +47,16 @@ public class GraphView extends ScrollPane {
 
         /*minWidth(500);
         minHeight(500);*/
-        setContent(pane);
+
+        pane = new Pane();
+        pane.setPrefWidth(700);
+        pane.setPrefHeight(700);
+
+        scrollPane = new ScrollPane(pane);
+        scrollPane.prefWidthProperty().bind(this.widthProperty());
+        scrollPane.prefHeightProperty().bind(this.heightProperty());
+
+        this.getChildren().add(scrollPane);
 
         Button button = new Button("add");
         Button button2 = new Button("drag");
@@ -92,9 +102,9 @@ public class GraphView extends ScrollPane {
             }
         });
 
-        pane.getChildren().addAll(button, button2, button3, button4, button5);
+        this.getChildren().addAll(button, button2, button3, button4, button5);
 
-        this.setOnMousePressed((MouseEvent event) ->
+        pane.setOnMousePressed((MouseEvent event) ->
         {
             if (state == PROGRAM_STATE.ADD) {
                 Node node = new Node(event.getX(), event.getY());
@@ -196,7 +206,7 @@ public class GraphView extends ScrollPane {
             }
         });
 
-        this.setOnMouseReleased((MouseEvent event) -> {
+        pane.setOnMouseReleased((MouseEvent event) -> {
             if (state == PROGRAM_STATE.ADD_LINES) {
                 if (isChouseNodeFirstForAddLines) {
                     if (lisNodes.size() > 0) {
