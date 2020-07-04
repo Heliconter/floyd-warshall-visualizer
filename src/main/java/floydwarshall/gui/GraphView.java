@@ -63,35 +63,30 @@ public class GraphView  extends Region {
         button.setOnMouseClicked(new EventHandler<MouseEvent>() {
             @Override
             public void handle(MouseEvent event) {
-                System.out.println("add press");
                 state = PROGRAM_STATE.ADD;
             }
         });
         button2.setOnMouseClicked(new EventHandler<MouseEvent>() {
             @Override
             public void handle(MouseEvent event) {
-                System.out.println("drag press");
                 state = PROGRAM_STATE.DRAG;
             }
         });
         button3.setOnMouseClicked(new EventHandler<MouseEvent>() {
             @Override
             public void handle(MouseEvent event) {
-                System.out.println("delete press");
                 state = PROGRAM_STATE.DELETE;
             }
         });
         button4.setOnMouseClicked(new EventHandler<MouseEvent>() {
             @Override
             public void handle(MouseEvent event) {
-                System.out.println("add lines press");
                 state = PROGRAM_STATE.ADD_LINES;
             }
         });
         button5.setOnMouseClicked(new EventHandler<MouseEvent>() {
             @Override
             public void handle(MouseEvent event) {
-                System.out.println("delete lines press");
                 state = PROGRAM_STATE.DELETE_LINES;
             }
         });
@@ -100,7 +95,6 @@ public class GraphView  extends Region {
 
         this.setOnMousePressed((MouseEvent event) ->
         {
-            System.out.println("press mouse");
             if (state == PROGRAM_STATE.ADD) {
                 MyNode node = new MyNode(event.getX(), event.getY());
                 getChildren().addAll(node.getEllipse(), node.getText()/*,node.getTriangle()*/);
@@ -110,7 +104,6 @@ public class GraphView  extends Region {
                 if (lisNodes.size() > 0) {
                     MyNode node = findDragEllipse(event.getX(), event.getY());
                     if (node != null) {
-                        System.out.println("delete");
                         //node.deleteNode(this);
                         deleteNode(node);
                         lisNodes.remove(node);
@@ -156,7 +149,6 @@ public class GraphView  extends Region {
 
         this.setOnMouseDragged((MouseEvent event) -> {
             if (state == PROGRAM_STATE.DRAG) {
-                System.out.println("drag");
 
                 if (isDragState && dragNode != null) {
                     dragNode.updatePosition(event.getX(), event.getY());
@@ -169,7 +161,6 @@ public class GraphView  extends Region {
             }
             if (state == PROGRAM_STATE.DELETE_LINES) {
                 if (listLines.size() > 0) {
-                    System.out.println("delete lines");
                     double x = event.getSceneX();
                     double y = event.getSceneY();
                     ArrayList<MyLine> deleteLine = new ArrayList<>();
@@ -205,7 +196,6 @@ public class GraphView  extends Region {
         });
 
         this.setOnMouseReleased((MouseEvent event) -> {
-            System.out.println("released");
             if (state == PROGRAM_STATE.ADD_LINES) {
                 if (isChouseNodeFirstForAddLines) {
                     if (lisNodes.size() > 0) {
@@ -299,11 +289,9 @@ public class GraphView  extends Region {
         for (MyLine cur : listLines) {
             if (cur.getStartX() == line.getStartX() && cur.getStartY() == line.getStartY() &&
                     cur.getEndX() == point.getX() && cur.getEndY() == point.getY()) {
-                System.out.println("Dublicate line found");
                 return true;
             }
         }
-        System.out.println("Dublicate line not found");
 
         return false;
     }
@@ -313,11 +301,9 @@ public class GraphView  extends Region {
         for (MyLine cur : listLines) {
             if (cur.getStartX() == line.getEndX() && cur.getStartY() == line.getEndY() &&
                     cur.getEndX() == line.getStartX() && cur.getEndY() == line.getStartY()) {
-                System.out.println("Inverse line found");
                 return cur;
             }
         }
-        System.out.println("Inverse line not found");
         return null;
     }
 
