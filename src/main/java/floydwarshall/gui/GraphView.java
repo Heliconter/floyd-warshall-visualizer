@@ -1,20 +1,24 @@
 package floydwarshall.gui;
 
-import javafx.scene.layout.Priority;
-import javafx.scene.layout.Region;
-import javafx.scene.layout.VBox;
-import javafx.scene.text.Text;
+import javafx.geometry.Pos;
+import javafx.scene.control.Button;
+import javafx.scene.control.Label;
+import javafx.scene.layout.*;
 
-class GraphView  extends Region {
+class GraphView  extends VBox {
     public GraphView() {
-        // Temporary filler:
-        Text graphView = new Text("Graph view");
-        Text saveOrOpenControls = new Text("Save/Open to/from file buttons");
-        Region vPusher = new Region();
-        VBox.setVgrow(vPusher, Priority.ALWAYS);
-        VBox layout = new VBox(graphView, vPusher, saveOrOpenControls);
-        layout.setMinHeight(400);
-        layout.setMinWidth(400);
-        getChildren().add(layout);
+        Label graphPlaceholder = new Label("Graph placeholder"); // TODO
+        graphPlaceholder.setPrefSize(300, 300);
+        graphPlaceholder.setStyle("-fx-background-color: rgb(255, 255, 255);");
+        graphPlaceholder.setAlignment(Pos.CENTER);
+
+        Button save = new Button("Save");
+        Button open = new Button("Open"); // TODO Add click handlers
+
+        HBox saveOrOpenControlsLayout = new HBox(save, open);
+        saveOrOpenControlsLayout.setSpacing(Gui.SPACING);
+
+        setAlignment(Pos.CENTER);
+        getChildren().addAll(graphPlaceholder, Gui.createVPusher(), saveOrOpenControlsLayout);
     }
 }
