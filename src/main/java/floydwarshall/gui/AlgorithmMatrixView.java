@@ -1,14 +1,16 @@
 package floydwarshall.gui;
 
-import javafx.scene.layout.BorderPane;
-import javafx.scene.layout.Region;
-import javafx.scene.text.Text;
+import javafx.geometry.Pos;
+import javafx.scene.control.Label;
+import javafx.scene.control.TableView;
+import javafx.scene.layout.*;
 
-class AlgorithmMatrixView extends Region {
+class AlgorithmMatrixView extends VBox {
     public AlgorithmMatrixView() {
-        // Temporary filler:
-        setMinHeight(250);
-        setMinWidth(400);
-        getChildren().add(new BorderPane(new Text("Graph matrix")));
+        TableView tableView = new TableView();
+        tableView.setPlaceholder(new Label("No vertices to display"));
+        getChildren().addAll(tableView);
+        setSpacing(Gui.SPACING);
+        setAlignment(Pos.CENTER);
     }
 }
