@@ -112,8 +112,22 @@ public class GraphView extends Region {
 
         this.getChildren().addAll(button, button2, button3, button4, button5);
 
+        pane.setOnMouseClicked((MouseEvent event) ->
+        {
+            if (event.isControlDown() && state == PROGRAM_STATE.DRAG) {
+                Node node = findDragEllipse(event.getX(), event.getY());
+                if (node != null) {
+                    node.setAffectedByGravity(!node.getAffectedByGravity());
+                }
+            }
+        });
+
         pane.setOnMousePressed((MouseEvent event) ->
         {
+            if (event.isControlDown()) {
+                return;
+            }
+
             if (state == PROGRAM_STATE.ADD) {
                 Node node = new Node(event.getX(), event.getY());
                 pane.getChildren().addAll(node.getEllipse(), node.getText()/*,node.getTriangle()*/);
