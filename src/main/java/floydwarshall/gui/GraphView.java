@@ -13,12 +13,12 @@ class GraphView  extends VBox {
         graphPlaceholder.setAlignment(Pos.CENTER);
 
         Button save = new Button("Save");
-        Button open = new Button("Open"); // TODO Add click handlers
+        Button load = new Button("Load"); // TODO Add click handlers
 
-        HBox saveOrOpenControlsLayout = new HBox(save, open);
-        saveOrOpenControlsLayout.setSpacing(Gui.SPACING);
+        HBox saveOrLoadControlsLayout = new HBox(save, load);
+        saveOrLoadControlsLayout.setSpacing(Gui.SPACING);
 
         setAlignment(Pos.CENTER);
-        getChildren().addAll(graphPlaceholder, Gui.createVPusher(), saveOrOpenControlsLayout);
+        getChildren().addAll(graphPlaceholder, Gui.createVPusher(), saveOrLoadControlsLayout);
     }
 }
