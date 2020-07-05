@@ -485,7 +485,7 @@ public class GraphView extends VBox {
         return String.valueOf(currentChar);
     }
 
-    private void setRandomGraph() {
+    private void setRandomGraph(int countNodes, int countEdges) {
         if (pane == null) return;
 
         class LocalPoint {
@@ -497,8 +497,12 @@ public class GraphView extends VBox {
             }
         }
 
-        int numberNodes = Math.rnd(2, 15);
-        int countEddges = Math.rnd(1, numberNodes * (numberNodes - 1));
+	if (countEdges > countNodes * (countNodes - 1)){
+            countEdges = countNodes * (countNodes - 1);
+        }
+
+//        int numberNodes = Math.rnd(2, 15);
+//        int countEddges = Math.rnd(1, numberNodes * (numberNodes - 1));
 
 //        numberNodes = 15;
 //        countEddges =15*14;
@@ -528,11 +532,9 @@ public class GraphView extends VBox {
 
         for (int i = 0; i < numberNodes; i++) {
             Node node = new Node(points.get(i).x, points.get(i).y);
-            //pane.getChildren().addAll(node.getEllipse(), node.getText());
 	    pane.getChildren().add(node);
             node.setName(getNodeName());
             listNodes.add(node);
-            //gravitySimulation.updateAdjacencyMatrix(listNodes, listLines);
         }
 
 
@@ -566,7 +568,6 @@ public class GraphView extends VBox {
                         line.setShapes();
                         pane.getChildren().add(line.getTriangle());
                         pane.getChildren().add(line.getWeightText());
-                        //gravitySimulation.updateAdjacencyMatrix(listNodes, listLines);
                         count++;
                         System.out.println(count);
                         nodes.remove(endNode);
