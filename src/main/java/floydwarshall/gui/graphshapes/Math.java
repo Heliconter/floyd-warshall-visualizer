@@ -3,6 +3,7 @@ package floydwarshall.gui.graphshapes;
 import javafx.geometry.Point2D;
 import javafx.scene.shape.Ellipse;
 import javafx.scene.shape.Shape;
+import javafx.scene.text.Text;
 
 
 public class Math {
@@ -16,6 +17,17 @@ public class Math {
         ellipse.setCenterY(y);
 
         return Shape.intersect(line, ellipse).getBoundsInLocal().getWidth() != -1;
+    }
+
+    public static boolean isEditWeight(Text text, double x, double y) {
+
+        Ellipse ellipse = new Ellipse();
+        ellipse.setRadiusX(50);
+        ellipse.setRadiusY(50);
+        ellipse.setCenterX(x);
+        ellipse.setCenterY(y);
+
+        return Shape.intersect(ellipse, text).getBoundsInLocal().getWidth() != -1;
     }
 
     public static void setControlPoint(Line line1, Line line2) {
