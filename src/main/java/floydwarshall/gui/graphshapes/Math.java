@@ -22,8 +22,8 @@ public class Math {
     public static boolean isEditWeight(Text text, double x, double y) {
 
         Ellipse ellipse = new Ellipse();
-        ellipse.setRadiusX(50);
-        ellipse.setRadiusY(50);
+        ellipse.setRadiusX(5);
+        ellipse.setRadiusY(5);
         ellipse.setCenterX(x);
         ellipse.setCenterY(y);
 
