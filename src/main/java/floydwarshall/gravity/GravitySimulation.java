@@ -38,8 +38,11 @@ public class GravitySimulation {
 
         for (Edge edge : edges) {
             // TODO: find a better way for getting indices
-            int indexFrom = indexOfPoint(points, edge.getFromPoint());
-            int indexTo = indexOfPoint(points, edge.getToPoint());
+            int indexFrom = points.indexOf(edge.getFromPoint());
+            int indexTo = points.indexOf(edge.getToPoint());
+            if (indexFrom == -1 || indexTo == -1) {
+                throw new RuntimeException("Could not find Point in ArrayList");
+            }
             adjMatrix[indexFrom][indexTo] = true;
             adjMatrix[indexTo][indexFrom] = true;
         }
@@ -124,14 +127,5 @@ public class GravitySimulation {
 
     private double distance(Point point1, Point point2) {
         return Math.sqrt(Math.pow(point1.getX() - point2.getX(), 2) + Math.pow(point1.getY() - point2.getY(), 2));
-    }
-
-    private int indexOfPoint(ArrayList<? extends Point> points, Point point) {
-        for (int i = 0; i < points.size(); i++) {
-            if (point == points.get(i)) {
-                return i;
-            }
-        }
-        return -1;
     }
 }

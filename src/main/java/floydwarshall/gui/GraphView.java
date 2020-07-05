@@ -374,9 +374,12 @@ public class GraphView extends VBox {
     private void notifyGraphChanged() {
         ArrayList<Edge> edges = new ArrayList<>();
         for (Line line : listLines) {
-            edges.add(new Edge(indexOfNode(line.getFromPoint(), listNodes),
-                               indexOfNode(line.getToPoint(), listNodes),
-                               line.getWeight()));
+            int indexFrom = listNodes.indexOf(line.getFromPoint());
+            int indexTo = listNodes.indexOf(line.getToPoint());
+            if (indexFrom == -1 || indexTo == -1) {
+                throw new RuntimeException("Could not find Point in ArrayList");
+            }
+            edges.add(new Edge(indexFrom, indexTo, line.getWeight()));
         }
         executor.setGraph(listNodes.size(), edges);
         gravitySimulation.updateAdjacencyMatrix(listNodes, listLines);
