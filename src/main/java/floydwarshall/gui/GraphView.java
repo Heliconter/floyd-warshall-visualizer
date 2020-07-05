@@ -1,6 +1,7 @@
 package floydwarshall.gui;
 
 import javafx.event.EventHandler;
+import javafx.event.ActionEvent;
 import javafx.geometry.Insets;
 import javafx.geometry.Point2D;
 import javafx.scene.control.Button;
@@ -10,6 +11,12 @@ import javafx.scene.control.TextField;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
+import javafx.animation.KeyFrame;
+import javafx.animation.Timeline;
+import javafx.beans.property.DoubleProperty;
+import javafx.beans.property.SimpleDoubleProperty;
+import javafx.util.Duration;
+import floydwarshall.gravity.GravitySimulation;
 import floydwarshall.gui.graphshapes.Line;
 import floydwarshall.gui.graphshapes.Math;
 import floydwarshall.gui.graphshapes.Node;
@@ -40,8 +47,43 @@ public class GraphView extends VBox {
     private Button updateButton;
     private Line editLine = null;
 
+    private GravitySimulation gravitySimulation;
+    private GravityCenterPoint gravityCenter;
+
+    class GravityCenterPoint extends Node {
+        private DoubleProperty x;
+        private DoubleProperty y;
+
+        public GravityCenterPoint() {
+            super(0, 0);
+            x = new SimpleDoubleProperty();
+            y = new SimpleDoubleProperty();
+            x.addListener((observable, oldValue, newValue) -> {
+                updatePosition(newValue.doubleValue(), getY());
+            });
+            y.addListener((observable, oldValue, newValue) -> {
+                updatePosition(getX(), newValue.doubleValue());
+            });
+        }
+
+        public DoubleProperty xProperty() {
+            return x;
+        }
+
+        public DoubleProperty yProperty() {
+            return y;
+        }
+    }
+
 
     public GraphView() {
+        gravitySimulation = new GravitySimulation();
+        gravityCenter = new GravityCenterPoint();
+        gravityCenter.updatePosition(getWidth() / 2, getHeight() / 2);
+        gravityCenter.xProperty().bind(this.widthProperty().divide(2));
+        gravityCenter.yProperty().bind(this.heightProperty().divide(2));
+        gravitySimulation.setGravityCenter(gravityCenter);
+
         pane = new Pane();
         pane.setPrefWidth(700);
         pane.setPrefHeight(700);
@@ -92,7 +134,6 @@ public class GraphView extends VBox {
         button6.setOnMouseClicked(new EventHandler<MouseEvent>() {
             @Override
             public void handle(MouseEvent event) {
-                System.out.println("Edit press");
                 state = PROGRAM_STATE.EDIT;
             }
         });
@@ -138,14 +179,28 @@ public class GraphView extends VBox {
 
         getChildren().addAll(buttonBox, scrollPane, inform);
 
+        pane.setOnMouseClicked((MouseEvent event) -> {
+            if (event.isControlDown() && state == PROGRAM_STATE.DRAG) {
+                Node node = findDragEllipse(event.getX(), event.getY());
+                if (node != null) {
+                    node.setAffectedByGravity(!node.getAffectedByGravity());
+                }
+            }
+        });
+
         pane.setOnMousePressed((MouseEvent event) ->
         {
+            if (event.isControlDown()) {
+                return;
+            }
+
             if (state == PROGRAM_STATE.ADD) {
                 if (listNodes.size() <= 25) {
                     Node node = new Node(event.getX(), event.getY());
                     pane.getChildren().addAll(node.getEllipse(), node.getText()/*,node.getTriangle()*/);
                     node.setName(getNodeName());
                     listNodes.add(node);
+                    gravitySimulation.updateAdjacencyMatrix(listNodes, listLines);
                 }
             }
             if (state == PROGRAM_STATE.DELETE) {
@@ -155,6 +210,7 @@ public class GraphView extends VBox {
                         //node.deleteNode(this);
                         deleteNode(node);
                         listNodes.remove(node);
+                        gravitySimulation.updateAdjacencyMatrix(listNodes, listLines);
                     }
                 }
             }
@@ -184,6 +240,7 @@ public class GraphView extends VBox {
                         if (node != null) {
                             dragNode = node;
                             isDragState = true;
+                            dragNode.setAffectedByGravity(false);
                         }
                     }
                 }
@@ -194,7 +251,6 @@ public class GraphView extends VBox {
                 }
             }
             if (state == PROGRAM_STATE.EDIT) {
-                System.out.println("edit");
                 for (Line line : listLines) {
                     if (Math.isEditWeight(line.getWeightText(), event.getSceneX(), event.getSceneY())) {
                         setTextOnLabel(line.getStartNodeName(), line.getEndNodeName(), line.getWeightText().getText());
@@ -251,6 +307,7 @@ public class GraphView extends VBox {
                                 inverse.updateLineShapes();
                             }
                         }
+                        gravitySimulation.updateAdjacencyMatrix(listNodes, listLines);
                     }
                 }
             }
@@ -274,6 +331,7 @@ public class GraphView extends VBox {
                             currentLine = null;
                             isChouseNodeFirstForAddLines = false;
                             node.drawFront();
+                            gravitySimulation.updateAdjacencyMatrix(listNodes, listLines);
                         } else {
                             pane.getChildren().remove(currentLine);
                             currentLine = null;
@@ -284,6 +342,7 @@ public class GraphView extends VBox {
             }
             if (state == PROGRAM_STATE.DRAG) {
                 if (isDragState) {
+                    dragNode.setAffectedByGravity(true);
                     dragNode = null;
                     isDragState = false;
                 }
@@ -294,6 +353,17 @@ public class GraphView extends VBox {
                 }
             }
         });
+
+        // set up timer for gravity updates
+        Timeline timer = new Timeline(
+                new KeyFrame(Duration.millis(1000 / 30), new EventHandler<ActionEvent>() {
+                    @Override
+                    public void handle(ActionEvent event) {
+                        gravitySimulation.simulationStep(listNodes);
+                    }
+                }));
+        timer.setCycleCount(Timeline.INDEFINITE);
+        timer.play();
     }
 
     private void deleteNode(Node node) {
