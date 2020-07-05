@@ -10,12 +10,16 @@ class AlgorithmControlView extends HBox {
     public AlgorithmControlView(ExecutorInterface executor) {
         this.executor = executor;
 
+        Button back = new Button("Back");
         Button step = new Button("Step");
         Button toEnd = new Button("To end");
-        getChildren().addAll(step, toEnd);
+        getChildren().addAll(back, step, toEnd);
         setSpacing(Gui.SPACING);
         setAlignment(Pos.CENTER_RIGHT);
 
+        back.setOnAction(actionEvent -> {
+            executor.step(-1);
+        });
         step.setOnAction(actionEvent ->  {
             executor.step(1);
         });
