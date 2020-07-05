@@ -43,6 +43,8 @@ public class Executor implements ExecutorInterface {
                 matrix[edge.from][edge.to] = edge.weight;
             }
         }
+
+        notifyObservers();
     }
 
     // NOTE: returns null if the path has not yet been found
@@ -93,10 +95,7 @@ public class Executor implements ExecutorInterface {
             }
             nextCell();
 
-            // notify observers
-            for (ExecutorObserver observer : observers) {
-                observer.stateChanged();
-            }
+            notifyObservers();
         }
     }
 
@@ -108,10 +107,7 @@ public class Executor implements ExecutorInterface {
             // restore previous value
             matrix[from][to] = history.pop();
 
-            // notify observers
-            for (ExecutorObserver observer : observers) {
-                observer.stateChanged();
-            }
+            notifyObservers();
         }
     }
 
@@ -132,6 +128,12 @@ public class Executor implements ExecutorInterface {
                 from = verticesAmount - 1;
                 k--;
             }
+        }
+    }
+
+    private void notifyObservers() {
+        for (ExecutorObserver observer : observers) {
+            observer.stateChanged();
         }
     }
 }
