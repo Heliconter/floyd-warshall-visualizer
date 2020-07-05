@@ -497,20 +497,20 @@ public class GraphView extends VBox {
             }
         }
 
-	if (countEdges > countNodes * (countNodes - 1)){
+        if (countEdges > countNodes * (countNodes - 1)){
             countEdges = countNodes * (countNodes - 1);
         }
 
-//        int numberNodes = Math.rnd(2, 15);
-//        int countEddges = Math.rnd(1, numberNodes * (numberNodes - 1));
+//        int countNodes = Math.rnd(2, 15);
+//        int countEdges = Math.rnd(1, countNodes * (countNodes - 1));
 
-//        numberNodes = 15;
-//        countEddges =15*14;
+//        countNodes = 15;
+//        countEdges =15*14;
 
-//        System.out.println("nodes" + numberNodes);
-//        System.out.println("edges" + countEddges);
-//        int countEddges = (int) ((java.lang.Math.random() * ++numberNodes * (numberNodes - 1)) + 1);
-//        int countEddges = numberNodes * (numberNodes - 1);
+//        System.out.println("nodes" + countNodes);
+//        System.out.println("edges" + countEdges);
+//        int countEdges = (int) ((java.lang.Math.random() * ++countNodes * (countNodes - 1)) + 1);
+//        int countEdges = countNodes * (countNodes - 1);
 
         ArrayList<LocalPoint> points = new ArrayList<>();
 
@@ -530,18 +530,20 @@ public class GraphView extends VBox {
         isDragState = false;
         isDeleteState = false;
 
-        for (int i = 0; i < numberNodes; i++) {
+        for (int i = 0; i < countNodes; i++) {
             Node node = new Node(points.get(i).x, points.get(i).y);
+            //pane.getChildren().addAll(node.getEllipse(), node.getText());
 	    pane.getChildren().add(node);
             node.setName(getNodeName());
             listNodes.add(node);
+            //gravitySimulation.updateAdjacencyMatrix(listNodes, listLines);
         }
 
 
         HashMap<Node, ArrayList<Node>> map = new HashMap<>();
 
 
-        for (int i = 0; i < numberNodes; i++) {
+        for (int i = 0; i < countNodes; i++) {
             map.put(listNodes.get(i), getListUnrelatedNodes(listNodes.get(i)));
         }
 
@@ -568,10 +570,11 @@ public class GraphView extends VBox {
                         line.setShapes();
                         pane.getChildren().add(line.getTriangle());
                         pane.getChildren().add(line.getWeightText());
+                        //gravitySimulation.updateAdjacencyMatrix(listNodes, listLines);
                         count++;
                         System.out.println(count);
                         nodes.remove(endNode);
-                        if (count == countEddges){
+                        if (count == countEdges){
                             isNotOver = false;
                             break;
                         }
@@ -580,7 +583,7 @@ public class GraphView extends VBox {
 
             }
         }
-	notifyGraphChanged();
+	    notifyGraphChanged();
         for (Node node : listNodes) {
             node.drawFront();
         }
