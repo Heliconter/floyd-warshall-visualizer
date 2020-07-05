@@ -51,6 +51,10 @@ public class Executor implements ExecutorInterface {
         return length;
     }
 
+    public int getVerticesAmount() {
+        return verticesAmount;
+    }
+
     public void step(int amount) {
         if (amount > 0) {
             stepForward(amount);
