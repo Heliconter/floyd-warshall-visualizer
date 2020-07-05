@@ -66,6 +66,18 @@ public class Executor implements ExecutorInterface {
 
     };
 
+    public int getK() {
+        return k;
+    }
+
+    public int getFrom() {
+        return from;
+    }
+
+    public int getTo() {
+        return to;
+    }
+
     public void toEnd() {
         while (!isFinished()) {
             step(100);
