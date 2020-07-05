@@ -4,10 +4,7 @@ import javafx.event.EventHandler;
 import javafx.event.ActionEvent;
 import javafx.geometry.Insets;
 import javafx.geometry.Point2D;
-import javafx.scene.control.Button;
-import javafx.scene.control.Label;
-import javafx.scene.control.ScrollPane;
-import javafx.scene.control.TextField;
+import javafx.scene.control.*;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
@@ -22,6 +19,7 @@ import floydwarshall.gravity.GravitySimulation;
 import floydwarshall.gui.graphshapes.Line;
 import floydwarshall.gui.graphshapes.Math;
 import floydwarshall.gui.graphshapes.Node;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -79,7 +77,6 @@ public class GraphView extends VBox {
         }
     }
 
-
     public GraphView(ExecutorInterface executor) {
         this.executor = executor;
 
@@ -105,6 +102,7 @@ public class GraphView extends VBox {
         Button button4 = new Button("add line");
         Button button5 = new Button("delete line");
         Button button6 = new Button("edit");
+        Button random = new Button("random");
         updateButton = new Button("update");
 
         button.setOnMouseClicked(new EventHandler<MouseEvent>() {
@@ -157,6 +155,14 @@ public class GraphView extends VBox {
                 }
             }
         });
+        random.setOnMouseClicked(event -> {
+            RandomGraphSettingsDialog dialog = new RandomGraphSettingsDialog();
+            dialog.showAndWait().ifPresent(response -> {
+                if (response == ButtonType.APPLY) {
+                    setRandomGraph(dialog.getVerticesAmount(), dialog.getEdgesAmount());
+                }
+            });
+        });
 
         Insets insetForButton = new Insets(0, 0, 0, 5);
         Insets insetForButtonBox = new Insets(0, 0, 5, 0);
@@ -165,7 +171,7 @@ public class GraphView extends VBox {
         Insets insetForTextField = new Insets(0, 0, 0, 30);
 
 
-        HBox buttonBox = new HBox(11, button, button2, button3, button4, button5, button6);
+        HBox buttonBox = new HBox(11, button, button2, button3, button4, button5, button6, random);
         HBox.setMargin(button, insetForButton);
         buttonBox.setPadding(insetForButtonBox);
         HBox.setMargin(buttonBox, insetForButtonBox);

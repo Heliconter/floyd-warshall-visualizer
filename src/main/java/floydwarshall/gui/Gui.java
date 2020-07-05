@@ -73,7 +73,7 @@ public class Gui {
         primaryStage.setTitle("Floyd-Warshall visualizer");
         primaryStage.setScene(scene);
         primaryStage.setMinHeight(600);
-        primaryStage.setMinWidth(800);
+        primaryStage.setMinWidth(1100);
         primaryStage.show();
     }
 
