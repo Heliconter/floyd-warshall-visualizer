@@ -1,6 +1,7 @@
 package floydwarshall.gui.graphshapes;
 
 import floydwarshall.gravity.Edge;
+import javafx.scene.paint.Color;
 import javafx.scene.shape.QuadCurve;
 import javafx.scene.text.Text;
 
