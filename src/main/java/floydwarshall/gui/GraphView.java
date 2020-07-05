@@ -10,6 +10,8 @@ import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
+import javafx.beans.property.DoubleProperty;
+import javafx.beans.property.SimpleDoubleProperty;
 import javafx.util.Duration;
 import floydwarshall.gravity.GravitySimulation;
 import floydwarshall.gui.graphshapes.Line;
@@ -31,11 +33,32 @@ public class GraphView extends Region {
     private boolean isDeleteState = false;
 
     private GravitySimulation gravitySimulation;
+    private GravityCenterPoint gravityCenter;
 
     private Pane pane;
     private ScrollPane scrollPane;
 
     private ArrayList<Node> lisNodes = new ArrayList<>();
+
+    class GravityCenterPoint extends Node {
+        private DoubleProperty x;
+        private DoubleProperty y;
+
+        public GravityCenterPoint() {
+            super(0, 0);
+            x = new SimpleDoubleProperty();
+            y = new SimpleDoubleProperty();
+            x.addListener((observable, oldValue, newValue) -> {
+                updatePosition(newValue.doubleValue(), getY());
+            });
+            y.addListener((observable, oldValue, newValue) -> {
+                updatePosition(getX(), newValue.doubleValue());
+            });
+        }
+
+        public DoubleProperty xProperty() { return x; }
+        public DoubleProperty yProperty() { return y; }
+    }
 
     public GraphView() {
        /* Label graphPlaceholder = new Label("Graph placeholder"); // TODO
@@ -55,6 +78,11 @@ public class GraphView extends Region {
         /*minWidth(500);
         minHeight(500);*/
         gravitySimulation = new GravitySimulation();
+        gravityCenter = new GravityCenterPoint();
+        gravityCenter.updatePosition(getWidth() / 2, getHeight() / 2);
+        gravityCenter.xProperty().bind(this.widthProperty().divide(2));
+        gravityCenter.yProperty().bind(this.heightProperty().divide(2));
+        gravitySimulation.setGravityCenter(gravityCenter);
 
         pane = new Pane();
         pane.setPrefWidth(700);
@@ -272,6 +300,7 @@ public class GraphView extends Region {
             }
         });
 
+        // set up timer for gravity updates
         Timeline timer = new Timeline(
                 new KeyFrame(Duration.millis(1000 / 30), new EventHandler<ActionEvent>() {
                     @Override

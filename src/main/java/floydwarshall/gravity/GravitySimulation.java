@@ -6,7 +6,7 @@ import java.util.Arrays;
 public class GravitySimulation {
     private double CHARGE_STRENGTH = 10;
     private double EDGE_STRENGTH = 15;
-    private double GRAVITY_STRENGTH = 0.007;
+    private double GRAVITY_STRENGTH = 0.01;
     private double IDEAL_EDGE_DISTANCE = 140;
     private double REPULSION_DISTANCE = 140;
 
