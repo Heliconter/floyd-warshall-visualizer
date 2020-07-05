@@ -73,13 +73,14 @@ public class Line extends QuadCurve implements Edge {
 
     // implement Edge
     public Node getFromPoint() {
-        return fromNode;
+        return startNode;
     }
 
     public Node getToPoint() {
-        return toNode;
+        return endNode;
+    }
 
-	// class for rendering weight
+    // class for rendering weight
     public class WeightText extends Text {
         Line line;
 

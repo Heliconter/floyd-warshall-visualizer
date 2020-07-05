@@ -183,7 +183,7 @@ public class GraphView extends Region {
                         line.setFill(null);
                         line.setStroke(Color.BLACK);
                         line.setStrokeWidth(1);
-                        line.setFromNode(node);
+                        line.setStartNode(node);
                         node.addLineStartPoint(line);
                         pane.getChildren().add(line);
                         currentLine = line;
@@ -253,7 +253,7 @@ public class GraphView extends Region {
                                 inverse.setControlX(inverse.getStartX());
                                 inverse.setControlY(inverse.getStartY());
                                 inverse.setConvex(false);
-                                inverse.updateTriangle();
+                                inverse.updateLineShapes();
                             }
                         }
                     }
@@ -267,7 +267,7 @@ public class GraphView extends Region {
                     if (lisNodes.size() > 0) {
                         Node node = findDragEllipse(event.getX(), event.getY());
                         if (node != null && !isDublicateLine(currentLine, new Point2D(node.getEllipse().getCenterX(), node.getEllipse().getCenterY()))) {
-                            currentLine.setToNode(node);
+                            currentLine.setEndNode(node);
                             node.addLineEndPoint(currentLine);
                             updateLineEndPoint(node.getEllipse().getCenterX(), node.getEllipse().getCenterY(), currentLine);
                             currentLine.setTriangle();
@@ -358,8 +358,8 @@ public class GraphView extends Region {
                 line.setConvex(true);
                 cur.setConvex(true);
                 Math.setControlPoint(line, cur);
-                line.updateTriangle();
-                cur.updateTriangle();
+                line.updateLineShapes();
+                cur.updateLineShapes();
                 break;
             }
         }
