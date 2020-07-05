@@ -59,10 +59,10 @@ public class GraphView extends VBox {
             x = new SimpleDoubleProperty();
             y = new SimpleDoubleProperty();
             x.addListener((observable, oldValue, newValue) -> {
-                updatePosition(newValue.doubleValue(), getY());
+                setX(newValue.doubleValue());
             });
             y.addListener((observable, oldValue, newValue) -> {
-                updatePosition(getX(), newValue.doubleValue());
+                setY(newValue.doubleValue());
             });
         }
 
@@ -197,7 +197,7 @@ public class GraphView extends VBox {
             if (state == PROGRAM_STATE.ADD) {
                 if (listNodes.size() <= 25) {
                     Node node = new Node(event.getX(), event.getY());
-                    pane.getChildren().addAll(node.getEllipse(), node.getText()/*,node.getTriangle()*/);
+                    pane.getChildren().add(node);
                     node.setName(getNodeName());
                     listNodes.add(node);
                     gravitySimulation.updateAdjacencyMatrix(listNodes, listLines);
@@ -218,9 +218,9 @@ public class GraphView extends VBox {
                 if (!isChouseNodeFirstForAddLines) {
                     Node node = findDragEllipse(event.getX(), event.getY());
                     if (node != null) {
-                        Line line = new Line(node.getEllipse().getCenterX(), node.getEllipse().getCenterY(),
-                                node.getEllipse().getCenterX(), node.getEllipse().getCenterY(),
-                                node.getEllipse().getCenterX(), node.getEllipse().getCenterY());
+                        Line line = new Line(node.getX(), node.getY(),
+                                             node.getX(), node.getY(),
+                                             node.getX(), node.getY());
                         line.setFill(null);
                         line.setStroke(Color.BLACK);
                         line.setStrokeWidth(1);
@@ -318,10 +318,10 @@ public class GraphView extends VBox {
                 if (isChouseNodeFirstForAddLines) {
                     if (listNodes.size() > 0) {
                         Node node = findDragEllipse(event.getX(), event.getY());
-                        if (node != null && !isDublicateLine(currentLine, new Point2D(node.getEllipse().getCenterX(), node.getEllipse().getCenterY()))
+                        if (node != null && !isDublicateLine(currentLine, new Point2D(node.getX(), node.getY()))
                                 && !currentLine.isStartNode(node)) {
                             node.addLineEndPoint(currentLine);
-                            updateLineEndPoint(node.getEllipse().getCenterX(), node.getEllipse().getCenterY(), currentLine);
+                            updateLineEndPoint(node.getX(), node.getY(), currentLine);
                             currentLine.setTriangle();
                             setConvexOnLines(currentLine);
                             listLines.add(currentLine);
@@ -367,8 +367,7 @@ public class GraphView extends VBox {
     }
 
     private void deleteNode(Node node) {
-        pane.getChildren().remove(node.getEllipse());
-        pane.getChildren().remove(node.getText());
+        pane.getChildren().remove(node);
         for (Line line : node.getLinesStartPoint()) {
             pane.getChildren().remove(line);
             pane.getChildren().remove(line.getTriangle());
@@ -394,7 +393,7 @@ public class GraphView extends VBox {
         Node node = null;
         double min = 1000000;
         for (Node el : listNodes) {
-            double localMin = (java.lang.Math.abs(el.getEllipse().getCenterX() - x) + java.lang.Math.abs(el.getEllipse().getCenterY() - y));
+            double localMin = (java.lang.Math.abs(el.getX() - x) + java.lang.Math.abs(el.getY() - y));
             if (localMin < min) {
                 min = localMin;
                 node = el;

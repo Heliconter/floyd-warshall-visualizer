@@ -2,40 +2,39 @@ package floydwarshall.gui.graphshapes;
 
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Ellipse;
+import javafx.scene.text.Font;
 import javafx.scene.text.Text;
+import javafx.scene.layout.StackPane;
 
 import java.util.ArrayList;
 
 import floydwarshall.gravity.Point;
 
-public class Node implements Point {
+public class Node extends StackPane implements Point {
 
     private Ellipse ellipse;
     private ArrayList<Line> linesStartPoint;
     private ArrayList<Line> linesEndPoint;
     private Text text;
-    public static final int radius = 10;
+    public static final int radius = 15;
 
     public Node(double centerX, double centerY) {
         ellipse = new Ellipse();
-        ellipse.setCenterX(centerX);
-        ellipse.setCenterY(centerY);
         ellipse.setRadiusX(radius);
         ellipse.setRadiusY(radius);
         ellipse.setFill(Color.SNOW);
         ellipse.setStroke(Color.BLACK);
-        text = new Text(centerX,centerY,"A");
-        text.setX(centerX-4);   // для выравнивания
-        text.setY(centerY+4);   // для выравнивания
+        text = new Text("A");
+        text.setFont(new Font(20));
+        this.getChildren().addAll(ellipse, text);
         linesStartPoint = new ArrayList<>();
         linesEndPoint = new ArrayList<>();
+        updatePosition(centerX, centerY);
     }
 
     public void updatePosition(double centerX, double centerY){
-        ellipse.setCenterX(centerX);
-        ellipse.setCenterY(centerY);
-        text.setX(centerX-4);   // для выравнивания
-        text.setY(centerY+4);   // для выравнивания
+        setLayoutX(centerX - radius);
+        setLayoutY(centerY - radius);
         for (Line line : linesStartPoint) {
             line.setStartX(centerX);
             line.setStartY(centerY);
@@ -55,10 +54,6 @@ public class Node implements Point {
                 Math.setControlPointForOnlyLine(line);
             }
         }
-    }
-
-    public Ellipse getEllipse() {
-        return ellipse;
     }
 
     public Text getText() {
@@ -115,8 +110,7 @@ public class Node implements Point {
     }
 
     public void drawFront(){
-        ellipse.toFront();
-        text.toFront();
+        toFront();
     }
 
     // implement Point
@@ -126,12 +120,12 @@ public class Node implements Point {
 
     @Override
     public double getX() {
-        return ellipse.getCenterX();
+        return getLayoutX() + radius;
     }
 
     @Override
     public double getY() {
-        return ellipse.getCenterY();
+        return getLayoutY() + radius;
     }
 
     @Override
@@ -151,12 +145,12 @@ public class Node implements Point {
 
     @Override
     public void setX(double value) {
-        updatePosition(value, ellipse.getCenterY());
+        updatePosition(value, getLayoutY() + radius);
     }
 
     @Override
     public void setY(double value) {
-        updatePosition(ellipse.getCenterX(), value);
+        updatePosition(getLayoutX() + radius, value);
     }
 
     @Override
