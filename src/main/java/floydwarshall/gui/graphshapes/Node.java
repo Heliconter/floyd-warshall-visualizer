@@ -6,7 +6,9 @@ import javafx.scene.text.Text;
 
 import java.util.ArrayList;
 
-public class Node {
+import floydwarshall.gravity.Point;
+
+public class Node implements Point {
 
     private Ellipse ellipse;
     private ArrayList<Line> linesStartPoint;
@@ -117,5 +119,57 @@ public class Node {
         text.toFront();
     }
 
+    // implement Point
+    private double dx;
+    private double dy;
+    private boolean affectedByGravity = true;
 
+    @Override
+    public double getX() {
+        return ellipse.getCenterX();
+    }
+
+    @Override
+    public double getY() {
+        return ellipse.getCenterY();
+    }
+
+    @Override
+    public double getDX() {
+        return dx;
+    }
+
+    @Override
+    public double getDY() {
+        return dy;
+    }
+
+    @Override
+    public boolean getAffectedByGravity() {
+        return affectedByGravity;
+    }
+
+    @Override
+    public void setX(double value) {
+        updatePosition(value, ellipse.getCenterY());
+    }
+
+    @Override
+    public void setY(double value) {
+        updatePosition(ellipse.getCenterX(), value);
+    }
+
+    @Override
+    public void setDX(double value) {
+        dx = value;
+    }
+
+    @Override
+    public void setDY(double value) {
+        dy = value;
+    }
+
+    public void setAffectedByGravity(boolean value) {
+        affectedByGravity = value;
+    }
 }

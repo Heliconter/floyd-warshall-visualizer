@@ -1,10 +1,10 @@
 package floydwarshall.gui.graphshapes;
 
+import floydwarshall.gravity.Edge;
 import javafx.scene.shape.QuadCurve;
 import javafx.scene.text.Text;
 
-public class Line extends QuadCurve {
-
+public class Line extends QuadCurve implements Edge {
     private boolean isConvex = false;
     private Triangle triangle = null;
     private WeightText weightText = null;
@@ -71,6 +71,15 @@ public class Line extends QuadCurve {
         weightText = new WeightText(this);
     }
 
+    // implement Edge
+    public Node getFromPoint() {
+        return fromNode;
+    }
+
+    public Node getToPoint() {
+        return toNode;
+
+	// class for rendering weight
     public class WeightText extends Text {
         Line line;
 
