@@ -151,6 +151,7 @@ public class GraphView extends VBox {
                         editLine.getWeightText().setText(newWeight);
                         editLine.setWeight(Integer.valueOf(newWeight));
                         setTextOnLabel(editLine.getStartNodeName(), editLine.getEndNodeName(), editLine.getWeightText().getText());
+                        notifyGraphChanged();
                     }
                 }
             }
@@ -490,14 +491,5 @@ public class GraphView extends VBox {
             }
         }
         return true;
-    }
-
-    private int indexOfNode(Node node, ArrayList<Node> nodes) {
-        for (int i = 0; i < nodes.size(); i++) {
-            if (nodes.get(i) == node) {
-                return i;
-            }
-        }
-        return -1;
     }
 }
