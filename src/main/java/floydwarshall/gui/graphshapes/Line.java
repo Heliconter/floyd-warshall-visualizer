@@ -15,6 +15,9 @@ public class Line extends QuadCurve implements Edge {
     public Line(double centerX, double centerY, double centerX1, double centerY1, double centerX2, double centerY2) {
         super(centerX, centerY, centerX1, centerY1, centerX2, centerY2);
         weight = 1;
+ 	setFill(null);
+        setStroke(Color.BLACK);
+        setStrokeWidth(1);
     }
 
     public int getWeight() {
