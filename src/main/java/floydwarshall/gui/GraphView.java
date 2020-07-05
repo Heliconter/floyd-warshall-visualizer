@@ -528,10 +528,11 @@ public class GraphView extends VBox {
 
         for (int i = 0; i < numberNodes; i++) {
             Node node = new Node(points.get(i).x, points.get(i).y);
-            pane.getChildren().addAll(node.getEllipse(), node.getText());
+            //pane.getChildren().addAll(node.getEllipse(), node.getText());
+	    pane.getChildren().add(node);
             node.setName(getNodeName());
             listNodes.add(node);
-            gravitySimulation.updateAdjacencyMatrix(listNodes, listLines);
+            //gravitySimulation.updateAdjacencyMatrix(listNodes, listLines);
         }
 
 
@@ -565,7 +566,7 @@ public class GraphView extends VBox {
                         line.setShapes();
                         pane.getChildren().add(line.getTriangle());
                         pane.getChildren().add(line.getWeightText());
-                        gravitySimulation.updateAdjacencyMatrix(listNodes, listLines);
+                        //gravitySimulation.updateAdjacencyMatrix(listNodes, listLines);
                         count++;
                         System.out.println(count);
                         nodes.remove(endNode);
@@ -578,6 +579,7 @@ public class GraphView extends VBox {
 
             }
         }
+	notifyGraphChanged();
         for (Node node : listNodes) {
             node.drawFront();
         }
