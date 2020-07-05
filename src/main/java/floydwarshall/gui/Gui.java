@@ -29,8 +29,8 @@ public class Gui {
         Label graphLabel = new Label("Graph");
         Label algorithmLabel = new Label("Algorithm");
         GraphView graphView = new GraphView(executor);
-        AlgorithmMatrixView algorithmMatrixView = new AlgorithmMatrixView();
-        AlgorithmControlView algorithmControlView = new AlgorithmControlView();
+        AlgorithmMatrixView algorithmMatrixView = new AlgorithmMatrixView(executor);
+        AlgorithmControlView algorithmControlView = new AlgorithmControlView(executor);
 
         VBox graphLayout = new VBox(graphLabel, graphView);
         VBox algorithmLayout = new VBox(algorithmLabel, algorithmMatrixView, createVPusher(), algorithmControlView);
