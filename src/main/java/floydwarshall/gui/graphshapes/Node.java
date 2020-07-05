@@ -24,7 +24,7 @@ public class Node {
         ellipse.setStroke(Color.BLACK);
         text = new Text(centerX,centerY,"A");
         text.setX(centerX-4);   // для выравнивания
-        text.setY(centerY+3);   // для выравнивания
+        text.setY(centerY+4);   // для выравнивания
         linesStartPoint = new ArrayList<>();
         linesEndPoint = new ArrayList<>();
     }
@@ -33,11 +33,11 @@ public class Node {
         ellipse.setCenterX(centerX);
         ellipse.setCenterY(centerY);
         text.setX(centerX-4);   // для выравнивания
-        text.setY(centerY+3);   // для выравнивания
+        text.setY(centerY+4);   // для выравнивания
         for (Line line : linesStartPoint) {
             line.setStartX(centerX);
             line.setStartY(centerY);
-            line.updateTriangle();
+            line.updateLineShapes();
             if (!line.isConvex()) {
                 line.setControlX(centerX);
                 line.setControlY(centerY);
@@ -48,7 +48,7 @@ public class Node {
         for (Line line : linesEndPoint) {
             line.setEndX(centerX);
             line.setEndY(centerY);
-            line.updateTriangle();
+            line.updateLineShapes();
             if (line.isConvex()){
                 Math.setControlPointForOnlyLine(line);
             }
@@ -107,6 +107,9 @@ public class Node {
 
     public void setName(String name){
         text.setText(name);
+    }
+    public String getName(){
+        return text.getText();
     }
 
     public void drawFront(){
