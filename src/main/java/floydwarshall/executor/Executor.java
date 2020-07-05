@@ -112,6 +112,8 @@ public class Executor implements ExecutorInterface {
     }
 
     private void stepBackward(int amount) {
+        if (history == null)
+            return;
         amount = -amount;
         for (; (amount > 0) && !history.isEmpty(); amount--) {
             prevCell();
