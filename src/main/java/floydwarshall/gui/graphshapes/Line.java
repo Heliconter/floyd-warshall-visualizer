@@ -66,7 +66,7 @@ public class Line extends QuadCurve implements Edge {
         }
     }
 
-    public void setTriangle() {
+    public void setShapes() {
         triangle = new Triangle(this);
         weightText = new WeightText(this);
     }

@@ -24,6 +24,7 @@ import floydwarshall.gui.graphshapes.Math;
 import floydwarshall.gui.graphshapes.Node;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 
 public class GraphView extends VBox {
     ExecutorInterface executor;
@@ -328,7 +329,7 @@ public class GraphView extends VBox {
                                 && !currentLine.isStartNode(node)) {
                             node.addLineEndPoint(currentLine);
                             updateLineEndPoint(node.getX(), node.getY(), currentLine);
-                            currentLine.setTriangle();
+                            currentLine.setShapes();
                             setConvexOnLines(currentLine);
                             listLines.add(currentLine);
                             currentLine.setEndNode(node);
@@ -482,6 +483,114 @@ public class GraphView extends VBox {
             }
         }
         return String.valueOf(currentChar);
+    }
+
+    private void setRandomGraph() {
+        if (pane == null) return;
+
+        class LocalPoint {
+            private int x, y;
+
+            private LocalPoint(int x, int y) {
+                this.x = x;
+                this.y = y;
+            }
+        }
+
+        int numberNodes = Math.rnd(2, 15);
+        int countEddges = Math.rnd(1, numberNodes * (numberNodes - 1));
+
+//        numberNodes = 15;
+//        countEddges =15*14;
+
+//        System.out.println("nodes" + numberNodes);
+//        System.out.println("edges" + countEddges);
+//        int countEddges = (int) ((java.lang.Math.random() * ++numberNodes * (numberNodes - 1)) + 1);
+//        int countEddges = numberNodes * (numberNodes - 1);
+
+        ArrayList<LocalPoint> points = new ArrayList<>();
+
+        for (int i = 50; i <= 210; i = i + 40) {
+            for (int j = 50; j <= 130; j = j + 40) {
+                points.add(new LocalPoint(j, i));
+            }
+        }
+
+
+        pane.getChildren().clear();
+        listLines.clear();
+        listNodes.clear();
+        dragNode = null;
+        currentLine = null;
+        isChouseNodeFirstForAddLines = false;
+        isDragState = false;
+        isDeleteState = false;
+
+        for (int i = 0; i < numberNodes; i++) {
+            Node node = new Node(points.get(i).x, points.get(i).y);
+            pane.getChildren().addAll(node.getEllipse(), node.getText());
+            node.setName(getNodeName());
+            listNodes.add(node);
+            gravitySimulation.updateAdjacencyMatrix(listNodes, listLines);
+        }
+
+
+        HashMap<Node, ArrayList<Node>> map = new HashMap<>();
+
+
+        for (int i = 0; i < numberNodes; i++) {
+            map.put(listNodes.get(i), getListUnrelatedNodes(listNodes.get(i)));
+        }
+
+
+        int count = 0;
+        boolean isNotOver = true;
+        while (isNotOver) {
+            for (Node startNode : listNodes) {
+                ArrayList<Node> nodes = map.get(startNode);
+                if (nodes != null && startNode != null) {
+                    if (nodes.size() != 0) {
+                        int randomNumber = Math.rnd(0, nodes.size() - 1);
+                        Node endNode = nodes.get(randomNumber);
+                        Line line = new Line(startNode.getX(), startNode.getY(),
+                                startNode.getX(), startNode.getY(),
+                                endNode.getX(), endNode.getY());
+                        startNode.addLineStartPoint(line);
+                        endNode.addLineEndPoint(line);
+                        setConvexOnLines(line);
+                        listLines.add(line);
+                        pane.getChildren().add(line);
+                        line.setStartNode(startNode);
+                        line.setEndNode(endNode);
+                        line.setShapes();
+                        pane.getChildren().add(line.getTriangle());
+                        pane.getChildren().add(line.getWeightText());
+                        gravitySimulation.updateAdjacencyMatrix(listNodes, listLines);
+                        count++;
+                        System.out.println(count);
+                        nodes.remove(endNode);
+                        if (count == countEddges){
+                            isNotOver = false;
+                            break;
+                        }
+                    }
+                }
+
+            }
+        }
+        for (Node node : listNodes) {
+            node.drawFront();
+        }
+    }
+
+    ArrayList<Node> getListUnrelatedNodes(Node mainNode) {
+        ArrayList<Node> list = new ArrayList<>();
+        for (Node node : listNodes) {
+            if (node != mainNode) {
+                list.add(node);
+            }
+        }
+        return list;
     }
 
     private boolean isDigitString(String string) {

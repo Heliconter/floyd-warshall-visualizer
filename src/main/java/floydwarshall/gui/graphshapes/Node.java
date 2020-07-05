@@ -102,6 +102,10 @@ public class Node extends StackPane implements Point {
         }
     }*/
 
+    public Ellipse getEllipse() {
+        return ellipse;
+    }
+
     public void setName(String name){
         text.setText(name);
     }

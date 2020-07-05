@@ -78,4 +78,10 @@ public class Math {
 
         return new Point2D(X,Y);
     }
+
+// * Метод получения псевдослучайного целого числа от min до max (включая max);
+    public static int rnd(int min, int max) {
+        max -= min;
+        return (int) (java.lang.Math.random() * ++max) + min;
+    }
 }
