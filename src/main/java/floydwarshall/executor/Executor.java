@@ -18,15 +18,15 @@ public class Executor implements ExecutorInterface {
         matrix = new Integer[0][0];
         verticesAmount = 0;
         k = 0;
+        observers = new ArrayList<ExecutorObserver>();
     }
 
-    public void setGraph(int verticesAmount, Edge[] edges) {
+    public void setGraph(int verticesAmount, ArrayList<Edge> edges) {
         k = 1;
         from = 0;
         to = 0;
         this.verticesAmount = verticesAmount;
         history = new Stack<Integer>();
-        observers = new ArrayList<ExecutorObserver>();
 
         matrix = new Integer[verticesAmount][verticesAmount];
 

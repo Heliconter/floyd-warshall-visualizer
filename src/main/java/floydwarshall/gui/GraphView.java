@@ -16,6 +16,8 @@ import javafx.animation.Timeline;
 import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.SimpleDoubleProperty;
 import javafx.util.Duration;
+import floydwarshall.executor.ExecutorInterface;
+import floydwarshall.executor.Edge;
 import floydwarshall.gravity.GravitySimulation;
 import floydwarshall.gui.graphshapes.Line;
 import floydwarshall.gui.graphshapes.Math;
@@ -24,6 +26,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 
 public class GraphView extends VBox {
+    ExecutorInterface executor;
 
     enum PROGRAM_STATE {
         ADD, DRAG, DELETE, ADD_LINES, DELETE_LINES, EDIT
@@ -76,7 +79,9 @@ public class GraphView extends VBox {
     }
 
 
-    public GraphView() {
+    public GraphView(ExecutorInterface executor) {
+        this.executor = executor;
+
         gravitySimulation = new GravitySimulation();
         gravityCenter = new GravityCenterPoint();
         gravityCenter.updatePosition(getWidth() / 2, getHeight() / 2);
@@ -200,7 +205,7 @@ public class GraphView extends VBox {
                     pane.getChildren().add(node);
                     node.setName(getNodeName());
                     listNodes.add(node);
-                    gravitySimulation.updateAdjacencyMatrix(listNodes, listLines);
+                    notifyGraphChanged();
                 }
             }
             if (state == PROGRAM_STATE.DELETE) {
@@ -210,7 +215,7 @@ public class GraphView extends VBox {
                         //node.deleteNode(this);
                         deleteNode(node);
                         listNodes.remove(node);
-                        gravitySimulation.updateAdjacencyMatrix(listNodes, listLines);
+                        notifyGraphChanged();
                     }
                 }
             }
@@ -307,7 +312,7 @@ public class GraphView extends VBox {
                                 inverse.updateLineShapes();
                             }
                         }
-                        gravitySimulation.updateAdjacencyMatrix(listNodes, listLines);
+                        notifyGraphChanged();
                     }
                 }
             }
@@ -331,7 +336,7 @@ public class GraphView extends VBox {
                             currentLine = null;
                             isChouseNodeFirstForAddLines = false;
                             node.drawFront();
-                            gravitySimulation.updateAdjacencyMatrix(listNodes, listLines);
+                            notifyGraphChanged();
                         } else {
                             pane.getChildren().remove(currentLine);
                             currentLine = null;
@@ -364,6 +369,17 @@ public class GraphView extends VBox {
                 }));
         timer.setCycleCount(Timeline.INDEFINITE);
         timer.play();
+    }
+
+    private void notifyGraphChanged() {
+        ArrayList<Edge> edges = new ArrayList<>();
+        for (Line line : listLines) {
+            edges.add(new Edge(indexOfNode(line.getFromPoint(), listNodes),
+                               indexOfNode(line.getToPoint(), listNodes),
+                               line.getWeight()));
+        }
+        executor.setGraph(listNodes.size(), edges);
+        gravitySimulation.updateAdjacencyMatrix(listNodes, listLines);
     }
 
     private void deleteNode(Node node) {
@@ -473,4 +489,12 @@ public class GraphView extends VBox {
         return true;
     }
 
+    private int indexOfNode(Node node, ArrayList<Node> nodes) {
+        for (int i = 0; i < nodes.size(); i++) {
+            if (nodes.get(i) == node) {
+                return i;
+            }
+        }
+        return -1;
+    }
 }

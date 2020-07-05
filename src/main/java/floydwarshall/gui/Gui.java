@@ -28,7 +28,7 @@ public class Gui {
     public void start(Stage primaryStage) {
         Label graphLabel = new Label("Graph");
         Label algorithmLabel = new Label("Algorithm");
-        GraphView graphView = new GraphView();
+        GraphView graphView = new GraphView(executor);
         AlgorithmMatrixView algorithmMatrixView = new AlgorithmMatrixView();
         AlgorithmControlView algorithmControlView = new AlgorithmControlView();
 
