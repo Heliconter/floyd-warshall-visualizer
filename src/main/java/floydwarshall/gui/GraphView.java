@@ -617,7 +617,7 @@ public class GraphView extends VBox {
         return list;
     }
 
-    public void setState (PROGRAM_STATE state){
+    private void setState (PROGRAM_STATE state){
         this.state = state;
         if (state != PROGRAM_STATE.EDIT){
             hideEditElements();
