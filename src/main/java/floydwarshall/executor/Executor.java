@@ -14,6 +14,8 @@ public class Executor implements ExecutorInterface {
 
     private ArrayList<ExecutorObserver> observers;
 
+    private boolean notificationsEnabled = true;
+
     public Executor() {
         matrix = new Integer[0][0];
         verticesAmount = 0;
@@ -84,9 +86,14 @@ public class Executor implements ExecutorInterface {
     }
 
     public void toEnd() {
+        notificationsEnabled = false;
+
         while (!isFinished()) {
             step(100);
         }
+
+        notificationsEnabled = true;
+        notifyObservers();
     };
 
     public boolean isFinished() {
@@ -153,6 +160,10 @@ public class Executor implements ExecutorInterface {
     }
 
     private void notifyObservers() {
+        if (!notificationsEnabled) {
+            return;
+        }
+
         for (ExecutorObserver observer : observers) {
             observer.stateChanged();
         }
