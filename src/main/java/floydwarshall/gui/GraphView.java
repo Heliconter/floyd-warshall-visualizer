@@ -564,6 +564,9 @@ public class GraphView extends VBox {
                         line.setStartNode(startNode);
                         line.setEndNode(endNode);
                         line.setShapes();
+                        int weight = Math.rnd(1, 10);
+                        line.setWeight(weight);
+                        line.getWeightText().setText(String.valueOf(weight));
                         pane.getChildren().add(line.getTriangle());
                         pane.getChildren().add(line.getWeightText());
                         count++;
