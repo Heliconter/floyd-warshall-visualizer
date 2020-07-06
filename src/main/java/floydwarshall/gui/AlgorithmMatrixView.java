@@ -28,9 +28,11 @@ class AlgorithmMatrixView extends GridPane {
 
         for (int i = 0; i < verticesAmount; i++) {
             Label vHeader = new Label("" + (char)('A' + i));
-            Label hHeader = new Label("" + (char)('A' + i));
+            Label hHeaderLabel = new Label("" + (char)('A' + i));
+            HBox hHeader = new HBox(hHeaderLabel);
             vHeader.setFont(new Font(16));
-            hHeader.setFont(new Font(16));
+            hHeaderLabel.setFont(new Font(16));
+            hHeader.setAlignment(Pos.CENTER);
             GridPane.setHalignment(vHeader, HPos.RIGHT);
             GridPane.setValignment(hHeader, VPos.BOTTOM);
             GridPane.setFillWidth(vHeader, true);
@@ -66,6 +68,7 @@ class AlgorithmMatrixView extends GridPane {
             for (int to = 0; to < verticesAmount; to++) {
                 Integer pathLength = executor.getPathLength(new PathEnds(from, to));
                 Label cell = new Label();
+                cell.setPadding(new Insets(Gui.SPACING));
                 cell.setFont(new Font(16));
                 if (pathLength == null)
                     cell.setText("∞");
