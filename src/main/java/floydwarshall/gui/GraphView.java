@@ -498,10 +498,19 @@ public class GraphView extends VBox {
 
         ArrayList<LocalPoint> points = new ArrayList<>();
 
-        for (int i = 50; i <= 210; i = i + 40) {
-            for (int j = 50; j <= 130; j = j + 40) {
-                points.add(new LocalPoint(j, i));
+        int spacing = 140;
+        int cols = (int) java.lang.Math.ceil(java.lang.Math.sqrt(countNodes));
+        int rows = (int) java.lang.Math.ceil(countNodes / (double)cols);
+        int startX = (int) (this.getWidth() / 2 - spacing * cols / 2);
+        int startY = (int) (this.getHeight() / 2 - spacing * rows / 2);
+        int x = startX;
+        for (int col = 0; col < cols; col++) {
+            for (int row = 0; row < rows; row++) {
+                points.add(new LocalPoint(x, startY));
+                x += spacing;
             }
+            x = startX;
+            startY += spacing;
         }
 
 
@@ -552,9 +561,7 @@ public class GraphView extends VBox {
                         line.setShapes();
                         pane.getChildren().add(line.getTriangle());
                         pane.getChildren().add(line.getWeightText());
-                        //gravitySimulation.updateAdjacencyMatrix(listNodes, listLines);
                         count++;
-                        System.out.println(count);
                         nodes.remove(endNode);
                         if (count == countEdges){
                             isNotOver = false;
