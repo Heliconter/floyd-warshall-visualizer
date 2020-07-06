@@ -96,12 +96,20 @@ public class GraphView extends VBox {
         scrollPane.prefHeightProperty().bind(this.heightProperty());
 
 
-        Button button = new Button("add");
-        Button button2 = new Button("drag");
-        Button button3 = new Button("delete");
-        Button button4 = new Button("add line");
-        Button button5 = new Button("delete line");
-        Button button6 = new Button("edit");
+        ToggleButton button = new ToggleButton("add");
+        button.setSelected(true);
+        ToggleButton button2 = new ToggleButton("drag");
+        ToggleButton button3 = new ToggleButton("delete");
+        ToggleButton button4 = new ToggleButton("add line");
+        ToggleButton button5 = new ToggleButton("delete line");
+        ToggleButton button6 = new ToggleButton("edit");
+        ToggleGroup group = new ToggleGroup();
+        button.setToggleGroup(group);
+        button2.setToggleGroup(group);
+        button3.setToggleGroup(group);
+        button4.setToggleGroup(group);
+        button5.setToggleGroup(group);
+        button6.setToggleGroup(group);
         Button random = new Button("random");
         updateButton = new Button("update");
 
