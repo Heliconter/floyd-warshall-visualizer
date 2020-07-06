@@ -40,6 +40,7 @@ public class Node extends StackPane implements Point {
 
     private Label pathLengthLabel;
     public void addPathLengthLabel(Integer pathLength) {
+        getChildren().remove(pathLengthLabel);
         Label label = new Label("" + (pathLength == null ? "∞" : pathLength));
         label.setBackground(new Background(new BackgroundFill(Color.YELLOW, new CornerRadii(2), Insets.EMPTY)));
         StackPane.setAlignment(label, Pos.TOP_RIGHT);
