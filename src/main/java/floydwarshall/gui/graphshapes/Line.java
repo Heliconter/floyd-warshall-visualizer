@@ -19,8 +19,8 @@ public class Line extends QuadCurve implements Edge {
 
     public Line(double centerX, double centerY, double centerX1, double centerY1, double centerX2, double centerY2) {
         super(centerX, centerY, centerX1, centerY1, centerX2, centerY2);
-        weight = 1;
- 	setFill(null);
+        setWeight(1);
+        setFill(null);
         setStroke(Color.BLACK);
         setStrokeWidth(1);
         observers = new ArrayList<>();
@@ -96,14 +96,18 @@ public class Line extends QuadCurve implements Edge {
 
         WeightText(Line line) {
             this.line = line;
+            setText(String.valueOf(line.getWeight()));
+
             setPrefWidth(50);
             setStyle("-fx-background-color: transparent , transparent , transparent;"
                     + "-fx-foreground-color: transparent; -fx-font: 13 arial;");
+
             textProperty().addListener((observable, oldValue, newValue) -> {
                 if (!newValue.matches("\\d*")) {
                     setText(newValue.replaceAll("[^\\d]", ""));
                 }
             });
+
             focusedProperty().addListener((obs, oldVal, newVal) -> {
                 if (!newVal) {
                     setWeight(Integer.valueOf(getText()));
@@ -112,6 +116,7 @@ public class Line extends QuadCurve implements Edge {
                     // TODO: add border/color here
                 }
             });
+
             setOnAction(e -> {
                 if (getText().length() == 0) {
                     return;
@@ -119,6 +124,7 @@ public class Line extends QuadCurve implements Edge {
                 setWeight(Integer.valueOf(getText()));
                 setFocused(false);
             });
+
             update();
         }
 
@@ -142,6 +148,10 @@ public class Line extends QuadCurve implements Edge {
     }
 
     private void notifyObservers() {
+        if (observers == null) {
+            return;
+        }
+
         for (EdgeObserver observer : observers) {
             observer.edgeChanged(this);
         }
