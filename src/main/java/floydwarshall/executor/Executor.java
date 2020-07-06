@@ -111,23 +111,25 @@ public class Executor implements ExecutorInterface {
                 }
             }
             nextCell();
-
-            notifyObservers();
         }
+
+        notifyObservers();
     }
 
     private void stepBackward(int amount) {
-        if (history == null)
+        if (history == null) {
             return;
+        }
+
         amount = -amount;
         for (; (amount > 0) && !history.isEmpty(); amount--) {
             prevCell();
 
             // restore previous value
             matrix[from][to] = history.pop();
-
-            notifyObservers();
         }
+
+        notifyObservers();
     }
 
     private void nextCell() {
