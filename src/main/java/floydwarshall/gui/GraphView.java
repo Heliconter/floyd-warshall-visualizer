@@ -639,13 +639,4 @@ public class GraphView extends VBox {
             showEditElements();
         }
     }
-
-    private boolean isDigitString(String string) {
-        for (char sign : string.toCharArray()) {
-            if (!Character.isDigit(sign)) {
-                return false;
-            }
-        }
-        return true;
-    }
 }
