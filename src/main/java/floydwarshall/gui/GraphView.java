@@ -21,14 +21,13 @@ import floydwarshall.gui.graphshapes.Math;
 import floydwarshall.gui.graphshapes.Node;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
 
 public class GraphView extends VBox {
     ExecutorInterface executor;
 
     enum PROGRAM_STATE {
-        ADD, DRAG, DELETE, ADD_LINES, DELETE_LINES, EDIT
+        ADD, DRAG, DELETE, ADD_LINES, DELETE_LINES
     }
 
     private PROGRAM_STATE state = PROGRAM_STATE.ADD;
@@ -43,11 +42,6 @@ public class GraphView extends VBox {
     private ScrollPane scrollPane;
 
     private ArrayList<Node> listNodes = new ArrayList<>();
-
-    private Label label;
-    private TextField textField;
-    private Button updateButton;
-    private Line editLine = null;
 
     private GravitySimulation gravitySimulation;
     private GravityCenterPoint gravityCenter;
@@ -102,14 +96,12 @@ public class GraphView extends VBox {
         ToggleButton button3 = new ToggleButton("delete");
         ToggleButton button4 = new ToggleButton("add line");
         ToggleButton button5 = new ToggleButton("delete line");
-        ToggleButton button6 = new ToggleButton("edit");
         ToggleGroup group = new ToggleGroup();
         button.setToggleGroup(group);
         button2.setToggleGroup(group);
         button3.setToggleGroup(group);
         button4.setToggleGroup(group);
         button5.setToggleGroup(group);
-        button6.setToggleGroup(group);
         Button random = new Button("random");
 
         button.setOnMouseClicked(new EventHandler<MouseEvent>() {
@@ -142,12 +134,6 @@ public class GraphView extends VBox {
                 setState(PROGRAM_STATE.DELETE_LINES);
             }
         });
-        button6.setOnMouseClicked(new EventHandler<MouseEvent>() {
-            @Override
-            public void handle(MouseEvent event) {
-                setState(PROGRAM_STATE.EDIT);
-            }
-        });
         random.setOnMouseClicked(event -> {
             RandomGraphSettingsDialog dialog = new RandomGraphSettingsDialog();
             dialog.showAndWait().ifPresent(response -> {
@@ -159,59 +145,13 @@ public class GraphView extends VBox {
 
         Insets insetForButton = new Insets(0, 0, 0, 5);
         Insets insetForButtonBox = new Insets(0, 0, 5, 0);
-        Insets insetForInformBox = new Insets(10, 0, 0, 0);
-        Insets insetForLabel = new Insets(3, 0, 0, 0);
-        Insets insetForTextField = new Insets(0, 0, 0, 30);
 
-
-        HBox buttonBox = new HBox(11, button, button2, button3, button4, button5, button6, random);
+        HBox buttonBox = new HBox(11, button, button2, button3, button4, button5, random);
         HBox.setMargin(button, insetForButton);
         buttonBox.setPadding(insetForButtonBox);
         HBox.setMargin(buttonBox, insetForButtonBox);
 
-
-        label = new Label("");
-        label.setPrefWidth(180);
-        label.setVisible(false);
-
-        textField = new TextField();
-        textField.setPrefWidth(50);
-        textField.setVisible(false);
-        textField.setStyle("-fx-background-color: transparent , transparent , transparent;");
-        textField.textProperty().addListener((observable, oldValue, newValue) -> {
-            if (!newValue.matches("\\d*")) {
-                textField.setText(newValue.replaceAll("[^\\d]", ""));
-            }
-        });
-        textField.focusedProperty().addListener((obs, oldVal, newVal) -> {
-            if (!newVal) {
-                if (state == PROGRAM_STATE.EDIT) {
-                    String newWeight = textField.getText();
-                    editLine.getWeightText().setText(newWeight);
-                    editLine.setWeight(Integer.valueOf(newWeight));
-                    setTextOnLabel(editLine.getStartNodeName(), editLine.getEndNodeName(), editLine.getWeightText().getText());
-                    notifyGraphChanged();
-                }
-            }
-        });
-        textField.setOnAction(e -> {
-            if (state == PROGRAM_STATE.EDIT) {
-                String newWeight = textField.getText();
-                editLine.getWeightText().setText(newWeight);
-                editLine.setWeight(Integer.valueOf(newWeight));
-                setTextOnLabel(editLine.getStartNodeName(), editLine.getEndNodeName(), editLine.getWeightText().getText());
-                notifyGraphChanged();
-            }
-        });
-
-
-        HBox inform = new HBox(label, textField);
-        inform.setPadding(insetForInformBox);
-        HBox.setMargin(label, insetForLabel);
-        HBox.setMargin(textField, insetForTextField);
-
-
-        getChildren().addAll(buttonBox, scrollPane, inform);
+        getChildren().addAll(buttonBox, scrollPane);
 
         pane.setOnMouseClicked((MouseEvent event) -> {
             if (event.isControlDown() && state == PROGRAM_STATE.DRAG) {
@@ -258,6 +198,7 @@ public class GraphView extends VBox {
                         line.setStrokeWidth(1);
                         line.setStartNode(node);
                         node.addLineStartPoint(line);
+                        line.addObserver(this::edgeChanged);
                         pane.getChildren().add(line);
                         currentLine = line;
                         isChouseNodeFirstForAddLines = true;
@@ -282,17 +223,6 @@ public class GraphView extends VBox {
                     isDeleteState = true;
                 }
             }
-            if (state == PROGRAM_STATE.EDIT) {
-                for (Line line : listLines) {
-                    if (Math.isEditWeight(line.getWeightText(), event.getSceneX(), event.getSceneY())) {
-                        setTextOnLabel(line.getStartNodeName(), line.getEndNodeName(), line.getWeightText().getText());
-                        textField.setText(line.getWeightText().getText());
-                        editLine = line;
-                        break;
-                    }
-                }
-            }
-
         });
 
         pane.setOnMouseDragged((MouseEvent event) -> {
@@ -398,6 +328,10 @@ public class GraphView extends VBox {
         timer.play();
     }
 
+    private void edgeChanged(Line edge) {
+        notifyGraphChanged();
+    }
+
     private void notifyGraphChanged() {
         ArrayList<Edge> edges = new ArrayList<>();
         for (Line line : listLines) {
@@ -492,11 +426,6 @@ public class GraphView extends VBox {
         return null;
     }
 
-    private void setTextOnLabel(String startNodeName, String endNodeName, String weight) {
-        String string = "Node {" + startNodeName + "} -> Node {" + endNodeName + "} Weight: " + weight;
-        label.setText(string);
-    }
-
     private String getNodeName() {
         return String.valueOf((char) ('A' + listNodes.size()));
     }
@@ -543,7 +472,6 @@ public class GraphView extends VBox {
         isChouseNodeFirstForAddLines = false;
         isDragState = false;
         isDeleteState = false;
-        hideEditElements();
 
         for (int i = 0; i < countNodes; i++) {
             Node node = new Node(points.get(i).x, points.get(i).y);
@@ -575,6 +503,7 @@ public class GraphView extends VBox {
                                 endNode.getX(), endNode.getY());
                         startNode.addLineStartPoint(line);
                         endNode.addLineEndPoint(line);
+                        line.addObserver(this::edgeChanged);
                         setConvexOnLines(line);
                         listLines.add(line);
                         pane.getChildren().add(line);
@@ -603,24 +532,6 @@ public class GraphView extends VBox {
         }
     }
 
-    private void hideEditElements() {
-        if (label != null) {
-            label.setVisible(false);
-        }
-        if (textField != null) {
-            textField.setVisible(false);
-        }
-    }
-
-    private void showEditElements() {
-        if (label != null) {
-            label.setVisible(true);
-        }
-        if (textField != null) {
-            textField.setVisible(true);
-        }
-    }
-
     ArrayList<Node> getListUnrelatedNodes(Node mainNode) {
         ArrayList<Node> list = new ArrayList<>();
         for (Node node : listNodes) {
@@ -633,10 +544,5 @@ public class GraphView extends VBox {
 
     private void setState (PROGRAM_STATE state){
         this.state = state;
-        if (state != PROGRAM_STATE.EDIT){
-            hideEditElements();
-        }else {
-            showEditElements();
-        }
     }
 }
