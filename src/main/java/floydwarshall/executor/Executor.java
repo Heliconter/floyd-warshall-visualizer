@@ -24,7 +24,7 @@ public class Executor implements ExecutorInterface {
     }
 
     public void setGraph(int verticesAmount, ArrayList<Edge> edges) {
-        k = 1;
+        k = 0;
         from = 0;
         to = 0;
         this.verticesAmount = verticesAmount;
@@ -44,11 +44,6 @@ public class Executor implements ExecutorInterface {
             if (edge.from != edge.to) {
                 matrix[edge.from][edge.to] = edge.weight;
             }
-        }
-
-        // fill diagonal with 0
-        for (int i = 0; i < verticesAmount; i++) {
-            matrix[i][i] = 0;
         }
 
         notifyObservers();
