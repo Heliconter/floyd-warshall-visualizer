@@ -155,7 +155,6 @@ public class GraphView extends VBox {
                 if (state == PROGRAM_STATE.EDIT) {
                     String newWeight = textField.getText();
                     if (isDigitString(newWeight)) {
-                        editLine.getWeightText().setText(newWeight);
                         editLine.setWeight(Integer.valueOf(newWeight));
                         setTextOnLabel(editLine.getStartNodeName(), editLine.getEndNodeName(), editLine.getWeightText().getText());
                         notifyGraphChanged();
@@ -574,7 +573,6 @@ public class GraphView extends VBox {
                         line.setShapes();
                         int weight = Math.rnd(1, 10);
                         line.setWeight(weight);
-                        line.getWeightText().setText(String.valueOf(weight));
                         pane.getChildren().add(line.getTriangle());
                         pane.getChildren().add(line.getWeightText());
                         count++;
