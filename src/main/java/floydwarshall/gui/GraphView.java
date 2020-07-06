@@ -178,17 +178,29 @@ public class GraphView extends VBox {
         textField.setPrefWidth(50);
         textField.setVisible(false);
         textField.setStyle("-fx-background-color: transparent , transparent , transparent;");
+        textField.textProperty().addListener((observable, oldValue, newValue) -> {
+            if (!newValue.matches("\\d*")) {
+                textField.setText(newValue.replaceAll("[^\\d]", ""));
+            }
+        });
         textField.focusedProperty().addListener((obs, oldVal, newVal) -> {
             if (!newVal) {
                 if (state == PROGRAM_STATE.EDIT) {
                     String newWeight = textField.getText();
-                    if (isDigitString(newWeight)) {
-                        editLine.getWeightText().setText(newWeight);
-                        editLine.setWeight(Integer.valueOf(newWeight));
-                        setTextOnLabel(editLine.getStartNodeName(), editLine.getEndNodeName(), editLine.getWeightText().getText());
-                        notifyGraphChanged();
-                    }
+                    editLine.getWeightText().setText(newWeight);
+                    editLine.setWeight(Integer.valueOf(newWeight));
+                    setTextOnLabel(editLine.getStartNodeName(), editLine.getEndNodeName(), editLine.getWeightText().getText());
+                    notifyGraphChanged();
                 }
+            }
+        });
+        textField.setOnAction(e -> {
+            if (state == PROGRAM_STATE.EDIT) {
+                String newWeight = textField.getText();
+                editLine.getWeightText().setText(newWeight);
+                editLine.setWeight(Integer.valueOf(newWeight));
+                setTextOnLabel(editLine.getStartNodeName(), editLine.getEndNodeName(), editLine.getWeightText().getText());
+                notifyGraphChanged();
             }
         });
 
