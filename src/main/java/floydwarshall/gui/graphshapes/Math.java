@@ -5,6 +5,8 @@ import javafx.scene.shape.Ellipse;
 import javafx.scene.shape.Shape;
 import javafx.scene.text.Text;
 
+import static java.lang.Math.*;
+
 
 public class Math {
 
@@ -41,14 +43,14 @@ public class Math {
         double rotatablePointY = (middlePointY + quarterPointY) / 2;
 
 
-        double newX = (rotatablePointX - middlePointX) * java.lang.Math.cos(90) - (rotatablePointY - middlePointY) * java.lang.Math.sin(90) + middlePointX;
-        double newY = (rotatablePointX - middlePointX) * java.lang.Math.sin(90) + (rotatablePointY - middlePointY) * java.lang.Math.cos(90) + middlePointY;
+        double newX = (rotatablePointX - middlePointX) * cos(90) - (rotatablePointY - middlePointY) * sin(90) + middlePointX;
+        double newY = (rotatablePointX - middlePointX) * sin(90) + (rotatablePointY - middlePointY) * cos(90) + middlePointY;
 
         line1.setControlX(newX);
         line1.setControlY(newY);
 
-        newX = (rotatablePointX - middlePointX) * java.lang.Math.cos(-90) - (rotatablePointY - middlePointY) * java.lang.Math.sin(-90) + middlePointX;
-        newY = (rotatablePointX - middlePointX) * java.lang.Math.sin(-90) + (rotatablePointY - middlePointY) * java.lang.Math.cos(-90) + middlePointY;
+        newX = (rotatablePointX - middlePointX) * cos(-90) - (rotatablePointY - middlePointY) * sin(-90) + middlePointX;
+        newY = (rotatablePointX - middlePointX) * sin(-90) + (rotatablePointY - middlePointY) * cos(-90) + middlePointY;
 
         line2.setControlX(newX);
         line2.setControlY(newY);
@@ -66,15 +68,15 @@ public class Math {
 
         double radian = 90;
 
-        double newX = (rotatablePointX - middlePointX) * java.lang.Math.cos(radian) - (rotatablePointY - middlePointY) * java.lang.Math.sin(radian) + middlePointX;
-        double newY = (rotatablePointX - middlePointX) * java.lang.Math.sin(radian) + (rotatablePointY - middlePointY) * java.lang.Math.cos(radian) + middlePointY;
+        double newX = (rotatablePointX - middlePointX) * cos(radian) - (rotatablePointY - middlePointY) * sin(radian) + middlePointX;
+        double newY = (rotatablePointX - middlePointX) * sin(radian) + (rotatablePointY - middlePointY) * cos(radian) + middlePointY;
         line.setControlX(newX);
         line.setControlY(newY);
     }
 
     public static Point2D rotateAroundPoint(Point2D point, Point2D pointCenterCoordinates, double radian) {
-        double X = (point.getX() - pointCenterCoordinates.getX()) * java.lang.Math.cos(radian) - (point.getY() - pointCenterCoordinates.getY()) * java.lang.Math.sin(radian) + pointCenterCoordinates.getX();
-        double Y = (point.getX() - pointCenterCoordinates.getX()) * java.lang.Math.sin(radian) + (point.getY() - pointCenterCoordinates.getY()) * java.lang.Math.cos(radian) + pointCenterCoordinates.getY();
+        double X = (point.getX() - pointCenterCoordinates.getX()) * cos(radian) - (point.getY() - pointCenterCoordinates.getY()) * sin(radian) + pointCenterCoordinates.getX();
+        double Y = (point.getX() - pointCenterCoordinates.getX()) * sin(radian) + (point.getY() - pointCenterCoordinates.getY()) * cos(radian) + pointCenterCoordinates.getY();
 
         return new Point2D(X,Y);
     }
@@ -82,6 +84,6 @@ public class Math {
 // * Метод получения псевдослучайного целого числа от min до max (включая max);
     public static int rnd(int min, int max) {
         max -= min;
-        return (int) (java.lang.Math.random() * ++max) + min;
+        return (int) (random() * ++max) + min;
     }
 }

@@ -88,20 +88,6 @@ public class Node extends StackPane implements Point {
         }
     }
 
-   /* public void deleteNode(GraphView group){
-        group.getChildren().remove(ellipse);
-        group.getChildren().remove(text);
-        for (MyLine line : linesStartPoint) {
-            group.getChildren().remove(line);
-            group.getChildren().remove(line.getTriangle());
-        }
-        for (MyLine line : linesEndPoint) {
-            group.getChildren().remove(line);
-            group.getChildren().remove(line.getTriangle());
-
-        }
-    }*/
-
     public Ellipse getEllipse() {
         return ellipse;
     }

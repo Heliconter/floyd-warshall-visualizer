@@ -496,17 +496,6 @@ public class GraphView extends VBox {
             countEdges = countNodes * (countNodes - 1);
         }
 
-//        int countNodes = Math.rnd(2, 15);
-//        int countEdges = Math.rnd(1, countNodes * (countNodes - 1));
-
-//        countNodes = 15;
-//        countEdges =15*14;
-
-//        System.out.println("nodes" + countNodes);
-//        System.out.println("edges" + countEdges);
-//        int countEdges = (int) ((java.lang.Math.random() * ++countNodes * (countNodes - 1)) + 1);
-//        int countEdges = countNodes * (countNodes - 1);
-
         ArrayList<LocalPoint> points = new ArrayList<>();
 
         for (int i = 50; i <= 210; i = i + 40) {
@@ -527,11 +516,9 @@ public class GraphView extends VBox {
 
         for (int i = 0; i < countNodes; i++) {
             Node node = new Node(points.get(i).x, points.get(i).y);
-            //pane.getChildren().addAll(node.getEllipse(), node.getText());
-	    pane.getChildren().add(node);
+            pane.getChildren().add(node);
             node.setName(getNodeName());
             listNodes.add(node);
-            //gravitySimulation.updateAdjacencyMatrix(listNodes, listLines);
         }
 
 
