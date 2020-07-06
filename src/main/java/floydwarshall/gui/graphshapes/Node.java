@@ -1,5 +1,11 @@
 package floydwarshall.gui.graphshapes;
 
+import javafx.geometry.Insets;
+import javafx.geometry.Pos;
+import javafx.scene.control.Label;
+import javafx.scene.layout.Background;
+import javafx.scene.layout.BackgroundFill;
+import javafx.scene.layout.CornerRadii;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Ellipse;
 import javafx.scene.text.Font;
@@ -30,6 +36,18 @@ public class Node extends StackPane implements Point {
         linesStartPoint = new ArrayList<>();
         linesEndPoint = new ArrayList<>();
         updatePosition(centerX, centerY);
+    }
+
+    private Label pathLengthLabel;
+    public void addPathLengthLabel(Integer pathLength) {
+        Label label = new Label("" + (pathLength == null ? "∞" : pathLength));
+        label.setBackground(new Background(new BackgroundFill(Color.YELLOW, new CornerRadii(2), Insets.EMPTY)));
+        StackPane.setAlignment(label, Pos.TOP_RIGHT);
+        getChildren().add(label);
+        pathLengthLabel = label;
+    }
+    public void removePathLengthLabel() {
+        getChildren().remove(pathLengthLabel);
     }
 
     public void updatePosition(double centerX, double centerY){
@@ -92,8 +110,13 @@ public class Node extends StackPane implements Point {
         return ellipse;
     }
 
-    public void setName(String name){
-        text.setText(name);
+    private int index;
+    public void setIndex(int index) {
+        this.index = index;
+        text.setText(String.valueOf((char) ('A' + index)));
+    }
+    public int getIndex() {
+        return index;
     }
     public String getName(){
         return text.getText();

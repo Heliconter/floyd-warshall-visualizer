@@ -1,5 +1,6 @@
 package floydwarshall.gui;
 
+import floydwarshall.executor.PathEnds;
 import javafx.event.EventHandler;
 import javafx.event.ActionEvent;
 import javafx.geometry.Insets;
@@ -223,7 +224,7 @@ public class GraphView extends VBox {
                 if (listNodes.size() <= 25) {
                     Node node = new Node(event.getX(), event.getY());
                     pane.getChildren().add(node);
-                    node.setName(getNodeName());
+                    node.setIndex(listNodes.size());
                     listNodes.add(node);
                     notifyGraphChanged();
                 }
@@ -401,6 +402,28 @@ public class GraphView extends VBox {
         }
         executor.setGraph(listNodes.size(), edges);
         gravitySimulation.updateAdjacencyMatrix(listNodes, listLines);
+
+        for (Node node : listNodes) {
+            node.addEventHandler(MouseEvent.MOUSE_ENTERED, event -> {
+                showPathLabels(((Node)event.getSource()).getIndex());
+            });
+        }
+        for (Node node : listNodes) {
+            node.addEventHandler(MouseEvent.MOUSE_EXITED, event -> {
+                hidePathLabels();
+            });
+        }
+    }
+
+    private void showPathLabels(int from) {
+        for (Node node : listNodes) {
+            node.addPathLengthLabel(executor.getPathLength(new PathEnds(from, node.getIndex())));
+        }
+    }
+    private void hidePathLabels() {
+        for (Node node : listNodes) {
+            node.removePathLengthLabel();
+        }
     }
 
     private void deleteNode(Node node) {
@@ -419,7 +442,7 @@ public class GraphView extends VBox {
         }
         listNodes.remove(node);
         for (int i = 0; i < listNodes.size(); i++) {
-            listNodes.get(i).setName(String.valueOf((char) ('A' + i)));
+            listNodes.get(i).setIndex(i);
         }
     }
 
@@ -539,7 +562,7 @@ public class GraphView extends VBox {
         for (int i = 0; i < countNodes; i++) {
             Node node = new Node(points.get(i).x, points.get(i).y);
             pane.getChildren().add(node);
-            node.setName(getNodeName());
+            node.setIndex(listNodes.size());
             listNodes.add(node);
         }
 
