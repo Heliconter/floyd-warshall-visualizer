@@ -24,141 +24,18 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 
-public class GraphView extends VBox {
-    ExecutorInterface executor;
-
-    enum PROGRAM_STATE {
-        ADD, DRAG, DELETE, ADD_LINES, DELETE_LINES, EDIT
-    }
-
-    private PROGRAM_STATE state = PROGRAM_STATE.ADD;
-    private Node dragNode = null;
-    private ArrayList<Line> listLines = new ArrayList<>();
-    private Line currentLine = null;
-    private boolean isChouseNodeFirstForAddLines = false;
-    private boolean isDragState = false;
-    private boolean isDeleteState = false;
-
-    private Pane pane;
-    private ScrollPane scrollPane;
-
-    private ArrayList<Node> listNodes = new ArrayList<>();
-
-    private Label label;
-    private TextField textField;
-    private Button updateButton;
-    private Line editLine = null;
-
-    private GravitySimulation gravitySimulation;
-    private GravityCenterPoint gravityCenter;
-
-    class GravityCenterPoint extends Node {
-        private DoubleProperty x;
-        private DoubleProperty y;
-
-        public GravityCenterPoint() {
-            super(0, 0);
-            x = new SimpleDoubleProperty();
-            y = new SimpleDoubleProperty();
-            x.addListener((observable, oldValue, newValue) -> {
-                setX(newValue.doubleValue());
-            });
-            y.addListener((observable, oldValue, newValue) -> {
-                setY(newValue.doubleValue());
-            });
-        }
-
-        public DoubleProperty xProperty() {
-            return x;
-        }
-
-        public DoubleProperty yProperty() {
-            return y;
-        }
-    }
+public class GraphView extends GraphViewBase {
 
     public GraphView(ExecutorInterface executor) {
-        this.executor = executor;
+        super(executor);
 
-        gravitySimulation = new GravitySimulation();
-        gravityCenter = new GravityCenterPoint();
-        gravityCenter.updatePosition(getWidth() / 2, getHeight() / 2);
-        gravityCenter.xProperty().bind(this.widthProperty().divide(2));
-        gravityCenter.yProperty().bind(this.heightProperty().divide(2));
-        gravitySimulation.setGravityCenter(gravityCenter);
-
-        pane = new Pane();
-        pane.setPrefWidth(700);
-        pane.setPrefHeight(700);
-
-        scrollPane = new ScrollPane(pane);
-        scrollPane.prefWidthProperty().bind(this.widthProperty());
-        scrollPane.prefHeightProperty().bind(this.heightProperty());
-
-
-        ToggleButton button = new ToggleButton("add");
-        button.setSelected(true);
-        ToggleButton button2 = new ToggleButton("drag");
-        ToggleButton button3 = new ToggleButton("delete");
-        ToggleButton button4 = new ToggleButton("add line");
-        ToggleButton button5 = new ToggleButton("delete line");
-        ToggleButton button6 = new ToggleButton("edit");
-        ToggleGroup group = new ToggleGroup();
-        button.setToggleGroup(group);
-        button2.setToggleGroup(group);
-        button3.setToggleGroup(group);
-        button4.setToggleGroup(group);
-        button5.setToggleGroup(group);
-        button6.setToggleGroup(group);
-        Button random = new Button("random");
-        updateButton = new Button("update");
-
-        button.setOnMouseClicked(new EventHandler<MouseEvent>() {
-            @Override
-            public void handle(MouseEvent event) {
-                setState(PROGRAM_STATE.ADD);
-            }
-        });
-        button2.setOnMouseClicked(new EventHandler<MouseEvent>() {
-            @Override
-            public void handle(MouseEvent event) {
-                setState(PROGRAM_STATE.DRAG);
-            }
-        });
-        button3.setOnMouseClicked(new EventHandler<MouseEvent>() {
-            @Override
-            public void handle(MouseEvent event) {
-                setState(PROGRAM_STATE.DELETE);
-            }
-        });
-        button4.setOnMouseClicked(new EventHandler<MouseEvent>() {
-            @Override
-            public void handle(MouseEvent event) {
-                setState(PROGRAM_STATE.ADD_LINES);
-            }
-        });
-        button5.setOnMouseClicked(new EventHandler<MouseEvent>() {
-            @Override
-            public void handle(MouseEvent event) {
-                setState(PROGRAM_STATE.DELETE_LINES);
-            }
-        });
-        button6.setOnMouseClicked(new EventHandler<MouseEvent>() {
-            @Override
-            public void handle(MouseEvent event) {
-                setState(PROGRAM_STATE.EDIT);
-            }
-        });
-        updateButton.setOnMouseClicked(new EventHandler<MouseEvent>() {
-            @Override
-            public void handle(MouseEvent event) {
-                if (state == PROGRAM_STATE.EDIT) {
-                    String newWeight = textField.getText();
-                    if (isDigitString(newWeight)) {
-                        editLine.setWeight(Integer.valueOf(newWeight));
-                        setTextOnLabel(editLine.getStartNodeName(), editLine.getEndNodeName(), editLine.getWeightText().getText());
-                        notifyGraphChanged();
-                    }
+        updateButton.setOnMouseClicked(event -> {
+            if (state == PROGRAM_STATE.EDIT) {
+                String newWeight = textField.getText();
+                if (isDigitString(newWeight)) {
+                    editLine.setWeight(Integer.valueOf(newWeight));
+                    setTextOnLabel(editLine.getStartNodeName(), editLine.getEndNodeName(), editLine.getWeightText().getText());
+                    notifyGraphChanged();
                 }
             }
         });
@@ -170,38 +47,6 @@ public class GraphView extends VBox {
                 }
             });
         });
-
-        Insets insetForButton = new Insets(0, 0, 0, 5);
-        Insets insetForButtonBox = new Insets(0, 0, 5, 0);
-        Insets insetForInformBox = new Insets(10, 0, 0, 0);
-        Insets insetForLabel = new Insets(3, 0, 0, 0);
-        Insets insetForTextField = new Insets(0, 0, 0, 30);
-
-
-        HBox buttonBox = new HBox(11, button, button2, button3, button4, button5, button6, random);
-        HBox.setMargin(button, insetForButton);
-        buttonBox.setPadding(insetForButtonBox);
-        HBox.setMargin(buttonBox, insetForButtonBox);
-
-
-        label = new Label("");
-        label.setPrefWidth(180);
-        label.setVisible(false);
-
-        textField = new TextField();
-        textField.setPrefWidth(50);
-        textField.setVisible(false);
-
-        updateButton.setVisible(false);
-
-        HBox inform = new HBox(label, textField, updateButton);
-        inform.setPadding(insetForInformBox);
-        HBox.setMargin(label, insetForLabel);
-        HBox.setMargin(textField, insetForTextField);
-        HBox.setMargin(updateButton, insetForTextField);
-
-
-        getChildren().addAll(buttonBox, scrollPane, inform);
 
         pane.setOnMouseClicked((MouseEvent event) -> {
             if (event.isControlDown() && state == PROGRAM_STATE.DRAG) {
@@ -592,30 +437,6 @@ public class GraphView extends VBox {
         }
     }
 
-    private void hideEditElements() {
-        if (label != null) {
-            label.setVisible(false);
-        }
-        if (textField != null) {
-            textField.setVisible(false);
-        }
-        if (updateButton != null) {
-            updateButton.setVisible(false);
-        }
-    }
-
-    private void showEditElements() {
-        if (label != null) {
-            label.setVisible(true);
-        }
-        if (textField != null) {
-            textField.setVisible(true);
-        }
-        if (updateButton != null) {
-            updateButton.setVisible(true);
-        }
-    }
-
     ArrayList<Node> getListUnrelatedNodes(Node mainNode) {
         ArrayList<Node> list = new ArrayList<>();
         for (Node node : listNodes) {
@@ -624,15 +445,6 @@ public class GraphView extends VBox {
             }
         }
         return list;
-    }
-
-    private void setState (PROGRAM_STATE state){
-        this.state = state;
-        if (state != PROGRAM_STATE.EDIT){
-            hideEditElements();
-        }else {
-            showEditElements();
-        }
     }
 
     private boolean isDigitString(String string) {
