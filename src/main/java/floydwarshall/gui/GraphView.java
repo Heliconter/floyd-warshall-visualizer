@@ -109,36 +109,42 @@ public class GraphView extends VBox {
             @Override
             public void handle(MouseEvent event) {
                 state = PROGRAM_STATE.ADD;
+                hideEditElements();
             }
         });
         button2.setOnMouseClicked(new EventHandler<MouseEvent>() {
             @Override
             public void handle(MouseEvent event) {
                 state = PROGRAM_STATE.DRAG;
+                hideEditElements();
             }
         });
         button3.setOnMouseClicked(new EventHandler<MouseEvent>() {
             @Override
             public void handle(MouseEvent event) {
                 state = PROGRAM_STATE.DELETE;
+                hideEditElements();
             }
         });
         button4.setOnMouseClicked(new EventHandler<MouseEvent>() {
             @Override
             public void handle(MouseEvent event) {
                 state = PROGRAM_STATE.ADD_LINES;
+                hideEditElements();
             }
         });
         button5.setOnMouseClicked(new EventHandler<MouseEvent>() {
             @Override
             public void handle(MouseEvent event) {
                 state = PROGRAM_STATE.DELETE_LINES;
+                hideEditElements();
             }
         });
         button6.setOnMouseClicked(new EventHandler<MouseEvent>() {
             @Override
             public void handle(MouseEvent event) {
                 state = PROGRAM_STATE.EDIT;
+                showEditElements();
             }
         });
         updateButton.setOnMouseClicked(new EventHandler<MouseEvent>() {
@@ -179,9 +185,13 @@ public class GraphView extends VBox {
 
         label = new Label("");
         label.setPrefWidth(180);
+        label.setVisible(false);
 
         textField = new TextField();
         textField.setPrefWidth(50);
+        textField.setVisible(false);
+
+        updateButton.setVisible(false);
 
         HBox inform = new HBox(label, textField, updateButton);
         inform.setPadding(insetForInformBox);
@@ -230,8 +240,8 @@ public class GraphView extends VBox {
                     Node node = findDragEllipse(event.getX(), event.getY());
                     if (node != null) {
                         Line line = new Line(node.getX(), node.getY(),
-                                             node.getX(), node.getY(),
-                                             node.getX(), node.getY());
+                                node.getX(), node.getY(),
+                                node.getX(), node.getY());
                         line.setFill(null);
                         line.setStroke(Color.BLACK);
                         line.setStrokeWidth(1);
@@ -407,7 +417,7 @@ public class GraphView extends VBox {
         }
         listNodes.remove(node);
         for (int i = 0; i < listNodes.size(); i++) {
-            listNodes.get(i).setName(String.valueOf((char)('A' + i)));
+            listNodes.get(i).setName(String.valueOf((char) ('A' + i)));
         }
     }
 
@@ -477,7 +487,7 @@ public class GraphView extends VBox {
     }
 
     private String getNodeName() {
-        return String.valueOf((char)('A' + listNodes.size()));
+        return String.valueOf((char) ('A' + listNodes.size()));
     }
 
     private void setRandomGraph(int countNodes, int countEdges) {
@@ -492,7 +502,7 @@ public class GraphView extends VBox {
             }
         }
 
-        if (countEdges > countNodes * (countNodes - 1)){
+        if (countEdges > countNodes * (countNodes - 1)) {
             countEdges = countNodes * (countNodes - 1);
         }
 
@@ -500,7 +510,7 @@ public class GraphView extends VBox {
 
         int spacing = 140;
         int cols = (int) java.lang.Math.ceil(java.lang.Math.sqrt(countNodes));
-        int rows = (int) java.lang.Math.ceil(countNodes / (double)cols);
+        int rows = (int) java.lang.Math.ceil(countNodes / (double) cols);
         int startX = (int) (this.getWidth() / 2 - spacing * cols / 2);
         int startY = (int) (this.getHeight() / 2 - spacing * rows / 2);
         int x = startX;
@@ -522,6 +532,7 @@ public class GraphView extends VBox {
         isChouseNodeFirstForAddLines = false;
         isDragState = false;
         isDeleteState = false;
+        hideEditElements();
 
         for (int i = 0; i < countNodes; i++) {
             Node node = new Node(points.get(i).x, points.get(i).y);
@@ -563,7 +574,7 @@ public class GraphView extends VBox {
                         pane.getChildren().add(line.getWeightText());
                         count++;
                         nodes.remove(endNode);
-                        if (count == countEdges){
+                        if (count == countEdges) {
                             isNotOver = false;
                             break;
                         }
@@ -572,9 +583,33 @@ public class GraphView extends VBox {
 
             }
         }
-	    notifyGraphChanged();
+        notifyGraphChanged();
         for (Node node : listNodes) {
             node.drawFront();
+        }
+    }
+
+    private void hideEditElements() {
+        if (label != null) {
+            label.setVisible(false);
+        }
+        if (textField != null) {
+            textField.setVisible(false);
+        }
+        if (updateButton != null) {
+            updateButton.setVisible(false);
+        }
+    }
+
+    private void showEditElements() {
+        if (label != null) {
+            label.setVisible(true);
+        }
+        if (textField != null) {
+            textField.setVisible(true);
+        }
+        if (updateButton != null) {
+            updateButton.setVisible(true);
         }
     }
 
