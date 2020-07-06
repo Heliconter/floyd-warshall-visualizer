@@ -111,7 +111,6 @@ public class GraphView extends VBox {
         button5.setToggleGroup(group);
         button6.setToggleGroup(group);
         Button random = new Button("random");
-        updateButton = new Button("update");
 
         button.setOnMouseClicked(new EventHandler<MouseEvent>() {
             @Override
@@ -149,20 +148,6 @@ public class GraphView extends VBox {
                 setState(PROGRAM_STATE.EDIT);
             }
         });
-        updateButton.setOnMouseClicked(new EventHandler<MouseEvent>() {
-            @Override
-            public void handle(MouseEvent event) {
-                if (state == PROGRAM_STATE.EDIT) {
-                    String newWeight = textField.getText();
-                    if (isDigitString(newWeight)) {
-                        editLine.getWeightText().setText(newWeight);
-                        editLine.setWeight(Integer.valueOf(newWeight));
-                        setTextOnLabel(editLine.getStartNodeName(), editLine.getEndNodeName(), editLine.getWeightText().getText());
-                        notifyGraphChanged();
-                    }
-                }
-            }
-        });
         random.setOnMouseClicked(event -> {
             RandomGraphSettingsDialog dialog = new RandomGraphSettingsDialog();
             dialog.showAndWait().ifPresent(response -> {
@@ -192,14 +177,26 @@ public class GraphView extends VBox {
         textField = new TextField();
         textField.setPrefWidth(50);
         textField.setVisible(false);
+        textField.setStyle("-fx-background-color: transparent , transparent , transparent;");
+        textField.focusedProperty().addListener((obs, oldVal, newVal) -> {
+            if (!newVal) {
+                if (state == PROGRAM_STATE.EDIT) {
+                    String newWeight = textField.getText();
+                    if (isDigitString(newWeight)) {
+                        editLine.getWeightText().setText(newWeight);
+                        editLine.setWeight(Integer.valueOf(newWeight));
+                        setTextOnLabel(editLine.getStartNodeName(), editLine.getEndNodeName(), editLine.getWeightText().getText());
+                        notifyGraphChanged();
+                    }
+                }
+            }
+        });
 
-        updateButton.setVisible(false);
 
-        HBox inform = new HBox(label, textField, updateButton);
+        HBox inform = new HBox(label, textField);
         inform.setPadding(insetForInformBox);
         HBox.setMargin(label, insetForLabel);
         HBox.setMargin(textField, insetForTextField);
-        HBox.setMargin(updateButton, insetForTextField);
 
 
         getChildren().addAll(buttonBox, scrollPane, inform);
@@ -601,9 +598,6 @@ public class GraphView extends VBox {
         if (textField != null) {
             textField.setVisible(false);
         }
-        if (updateButton != null) {
-            updateButton.setVisible(false);
-        }
     }
 
     private void showEditElements() {
@@ -612,9 +606,6 @@ public class GraphView extends VBox {
         }
         if (textField != null) {
             textField.setVisible(true);
-        }
-        if (updateButton != null) {
-            updateButton.setVisible(true);
         }
     }
 
