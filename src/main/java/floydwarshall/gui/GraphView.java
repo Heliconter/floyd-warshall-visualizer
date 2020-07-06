@@ -108,37 +108,37 @@ public class GraphView extends VBox {
         button.setOnMouseClicked(new EventHandler<MouseEvent>() {
             @Override
             public void handle(MouseEvent event) {
-                state = PROGRAM_STATE.ADD;
+                setState(PROGRAM_STATE.ADD);
             }
         });
         button2.setOnMouseClicked(new EventHandler<MouseEvent>() {
             @Override
             public void handle(MouseEvent event) {
-                state = PROGRAM_STATE.DRAG;
+                setState(PROGRAM_STATE.DRAG);
             }
         });
         button3.setOnMouseClicked(new EventHandler<MouseEvent>() {
             @Override
             public void handle(MouseEvent event) {
-                state = PROGRAM_STATE.DELETE;
+                setState(PROGRAM_STATE.DELETE);
             }
         });
         button4.setOnMouseClicked(new EventHandler<MouseEvent>() {
             @Override
             public void handle(MouseEvent event) {
-                state = PROGRAM_STATE.ADD_LINES;
+                setState(PROGRAM_STATE.ADD_LINES);
             }
         });
         button5.setOnMouseClicked(new EventHandler<MouseEvent>() {
             @Override
             public void handle(MouseEvent event) {
-                state = PROGRAM_STATE.DELETE_LINES;
+                setState(PROGRAM_STATE.DELETE_LINES);
             }
         });
         button6.setOnMouseClicked(new EventHandler<MouseEvent>() {
             @Override
             public void handle(MouseEvent event) {
-                state = PROGRAM_STATE.EDIT;
+                setState(PROGRAM_STATE.EDIT);
             }
         });
         updateButton.setOnMouseClicked(new EventHandler<MouseEvent>() {
@@ -179,9 +179,13 @@ public class GraphView extends VBox {
 
         label = new Label("");
         label.setPrefWidth(180);
+        label.setVisible(false);
 
         textField = new TextField();
         textField.setPrefWidth(50);
+        textField.setVisible(false);
+
+        updateButton.setVisible(false);
 
         HBox inform = new HBox(label, textField, updateButton);
         inform.setPadding(insetForInformBox);
@@ -220,9 +224,7 @@ public class GraphView extends VBox {
                 if (listNodes.size() > 0) {
                     Node node = findDragEllipse(event.getX(), event.getY());
                     if (node != null) {
-                        //node.deleteNode(this);
                         deleteNode(node);
-                        listNodes.remove(node);
                         notifyGraphChanged();
                     }
                 }
@@ -232,8 +234,8 @@ public class GraphView extends VBox {
                     Node node = findDragEllipse(event.getX(), event.getY());
                     if (node != null) {
                         Line line = new Line(node.getX(), node.getY(),
-                                             node.getX(), node.getY(),
-                                             node.getX(), node.getY());
+                                node.getX(), node.getY(),
+                                node.getX(), node.getY());
                         line.setFill(null);
                         line.setStroke(Color.BLACK);
                         line.setStrokeWidth(1);
@@ -407,6 +409,10 @@ public class GraphView extends VBox {
             pane.getChildren().remove(line.getWeightText());
             listLines.remove(line);
         }
+        listNodes.remove(node);
+        for (int i = 0; i < listNodes.size(); i++) {
+            listNodes.get(i).setName(String.valueOf((char) ('A' + i)));
+        }
     }
 
     private void updateLineEndPoint(double end_x,
@@ -475,20 +481,7 @@ public class GraphView extends VBox {
     }
 
     private String getNodeName() {
-        char currentChar = 'A';
-        ArrayList<String> namesNode = new ArrayList<>();
-        for (Node node : listNodes) {
-            namesNode.add(node.getName());
-        }
-        Collections.sort(namesNode);
-        for (String name : namesNode) {
-            if (name.toCharArray()[0] > currentChar) {
-                break;
-            } else {
-                currentChar++;
-            }
-        }
-        return String.valueOf(currentChar);
+        return String.valueOf((char) ('A' + listNodes.size()));
     }
 
     private void setRandomGraph(int countNodes, int countEdges) {
@@ -503,27 +496,25 @@ public class GraphView extends VBox {
             }
         }
 
-        if (countEdges > countNodes * (countNodes - 1)){
+        if (countEdges > countNodes * (countNodes - 1)) {
             countEdges = countNodes * (countNodes - 1);
         }
 
-//        int countNodes = Math.rnd(2, 15);
-//        int countEdges = Math.rnd(1, countNodes * (countNodes - 1));
-
-//        countNodes = 15;
-//        countEdges =15*14;
-
-//        System.out.println("nodes" + countNodes);
-//        System.out.println("edges" + countEdges);
-//        int countEdges = (int) ((java.lang.Math.random() * ++countNodes * (countNodes - 1)) + 1);
-//        int countEdges = countNodes * (countNodes - 1);
-
         ArrayList<LocalPoint> points = new ArrayList<>();
 
-        for (int i = 50; i <= 210; i = i + 40) {
-            for (int j = 50; j <= 130; j = j + 40) {
-                points.add(new LocalPoint(j, i));
+        int spacing = 140;
+        int cols = (int) java.lang.Math.ceil(java.lang.Math.sqrt(countNodes));
+        int rows = (int) java.lang.Math.ceil(countNodes / (double) cols);
+        int startX = (int) (this.getWidth() / 2 - spacing * cols / 2);
+        int startY = (int) (this.getHeight() / 2 - spacing * rows / 2);
+        int x = startX;
+        for (int col = 0; col < cols; col++) {
+            for (int row = 0; row < rows; row++) {
+                points.add(new LocalPoint(x, startY));
+                x += spacing;
             }
+            x = startX;
+            startY += spacing;
         }
 
 
@@ -535,14 +526,13 @@ public class GraphView extends VBox {
         isChouseNodeFirstForAddLines = false;
         isDragState = false;
         isDeleteState = false;
+        hideEditElements();
 
         for (int i = 0; i < countNodes; i++) {
             Node node = new Node(points.get(i).x, points.get(i).y);
-            //pane.getChildren().addAll(node.getEllipse(), node.getText());
-	    pane.getChildren().add(node);
+            pane.getChildren().add(node);
             node.setName(getNodeName());
             listNodes.add(node);
-            //gravitySimulation.updateAdjacencyMatrix(listNodes, listLines);
         }
 
 
@@ -574,13 +564,14 @@ public class GraphView extends VBox {
                         line.setStartNode(startNode);
                         line.setEndNode(endNode);
                         line.setShapes();
+                        int weight = Math.rnd(1, 10);
+                        line.setWeight(weight);
+                        line.getWeightText().setText(String.valueOf(weight));
                         pane.getChildren().add(line.getTriangle());
                         pane.getChildren().add(line.getWeightText());
-                        //gravitySimulation.updateAdjacencyMatrix(listNodes, listLines);
                         count++;
-                        System.out.println(count);
                         nodes.remove(endNode);
-                        if (count == countEdges){
+                        if (count == countEdges) {
                             isNotOver = false;
                             break;
                         }
@@ -589,9 +580,33 @@ public class GraphView extends VBox {
 
             }
         }
-	    notifyGraphChanged();
+        notifyGraphChanged();
         for (Node node : listNodes) {
             node.drawFront();
+        }
+    }
+
+    private void hideEditElements() {
+        if (label != null) {
+            label.setVisible(false);
+        }
+        if (textField != null) {
+            textField.setVisible(false);
+        }
+        if (updateButton != null) {
+            updateButton.setVisible(false);
+        }
+    }
+
+    private void showEditElements() {
+        if (label != null) {
+            label.setVisible(true);
+        }
+        if (textField != null) {
+            textField.setVisible(true);
+        }
+        if (updateButton != null) {
+            updateButton.setVisible(true);
         }
     }
 
@@ -603,6 +618,15 @@ public class GraphView extends VBox {
             }
         }
         return list;
+    }
+
+    private void setState (PROGRAM_STATE state){
+        this.state = state;
+        if (state != PROGRAM_STATE.EDIT){
+            hideEditElements();
+        }else {
+            showEditElements();
+        }
     }
 
     private boolean isDigitString(String string) {

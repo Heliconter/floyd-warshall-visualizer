@@ -14,6 +14,8 @@ public class Executor implements ExecutorInterface {
 
     private ArrayList<ExecutorObserver> observers;
 
+    private boolean notificationsEnabled = true;
+
     public Executor() {
         matrix = new Integer[0][0];
         verticesAmount = 0;
@@ -22,7 +24,7 @@ public class Executor implements ExecutorInterface {
     }
 
     public void setGraph(int verticesAmount, ArrayList<Edge> edges) {
-        k = 1;
+        k = 0;
         from = 0;
         to = 0;
         this.verticesAmount = verticesAmount;
@@ -79,9 +81,14 @@ public class Executor implements ExecutorInterface {
     }
 
     public void toEnd() {
+        notificationsEnabled = false;
+
         while (!isFinished()) {
             step(100);
         }
+
+        notificationsEnabled = true;
+        notifyObservers();
     };
 
     public boolean isFinished() {
@@ -106,23 +113,25 @@ public class Executor implements ExecutorInterface {
                 }
             }
             nextCell();
-
-            notifyObservers();
         }
+
+        notifyObservers();
     }
 
     private void stepBackward(int amount) {
-        if (history == null)
+        if (history == null) {
             return;
+        }
+
         amount = -amount;
         for (; (amount > 0) && !history.isEmpty(); amount--) {
             prevCell();
 
             // restore previous value
             matrix[from][to] = history.pop();
-
-            notifyObservers();
         }
+
+        notifyObservers();
     }
 
     private void nextCell() {
@@ -146,6 +155,10 @@ public class Executor implements ExecutorInterface {
     }
 
     private void notifyObservers() {
+        if (!notificationsEnabled) {
+            return;
+        }
+
         for (ExecutorObserver observer : observers) {
             observer.stateChanged();
         }
