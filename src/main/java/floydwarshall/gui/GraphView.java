@@ -108,43 +108,37 @@ public class GraphView extends VBox {
         button.setOnMouseClicked(new EventHandler<MouseEvent>() {
             @Override
             public void handle(MouseEvent event) {
-                state = PROGRAM_STATE.ADD;
-                hideEditElements();
+                setState(PROGRAM_STATE.ADD);
             }
         });
         button2.setOnMouseClicked(new EventHandler<MouseEvent>() {
             @Override
             public void handle(MouseEvent event) {
-                state = PROGRAM_STATE.DRAG;
-                hideEditElements();
+                setState(PROGRAM_STATE.DRAG);
             }
         });
         button3.setOnMouseClicked(new EventHandler<MouseEvent>() {
             @Override
             public void handle(MouseEvent event) {
-                state = PROGRAM_STATE.DELETE;
-                hideEditElements();
+                setState(PROGRAM_STATE.DELETE);
             }
         });
         button4.setOnMouseClicked(new EventHandler<MouseEvent>() {
             @Override
             public void handle(MouseEvent event) {
-                state = PROGRAM_STATE.ADD_LINES;
-                hideEditElements();
+                setState(PROGRAM_STATE.ADD_LINES);
             }
         });
         button5.setOnMouseClicked(new EventHandler<MouseEvent>() {
             @Override
             public void handle(MouseEvent event) {
-                state = PROGRAM_STATE.DELETE_LINES;
-                hideEditElements();
+                setState(PROGRAM_STATE.DELETE_LINES);
             }
         });
         button6.setOnMouseClicked(new EventHandler<MouseEvent>() {
             @Override
             public void handle(MouseEvent event) {
-                state = PROGRAM_STATE.EDIT;
-                showEditElements();
+                setState(PROGRAM_STATE.EDIT);
             }
         });
         updateButton.setOnMouseClicked(new EventHandler<MouseEvent>() {
@@ -621,6 +615,15 @@ public class GraphView extends VBox {
             }
         }
         return list;
+    }
+
+    public void setState (PROGRAM_STATE state){
+        this.state = state;
+        if (state != PROGRAM_STATE.EDIT){
+            hideEditElements();
+        }else {
+            showEditElements();
+        }
     }
 
     private boolean isDigitString(String string) {
