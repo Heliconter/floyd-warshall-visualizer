@@ -220,9 +220,7 @@ public class GraphView extends VBox {
                 if (listNodes.size() > 0) {
                     Node node = findDragEllipse(event.getX(), event.getY());
                     if (node != null) {
-                        //node.deleteNode(this);
                         deleteNode(node);
-                        listNodes.remove(node);
                         notifyGraphChanged();
                     }
                 }
@@ -407,6 +405,10 @@ public class GraphView extends VBox {
             pane.getChildren().remove(line.getWeightText());
             listLines.remove(line);
         }
+        listNodes.remove(node);
+        for (int i = 0; i < listNodes.size(); i++) {
+            listNodes.get(i).setName(String.valueOf((char)('A' + i)));
+        }
     }
 
     private void updateLineEndPoint(double end_x,
@@ -475,20 +477,7 @@ public class GraphView extends VBox {
     }
 
     private String getNodeName() {
-        char currentChar = 'A';
-        ArrayList<String> namesNode = new ArrayList<>();
-        for (Node node : listNodes) {
-            namesNode.add(node.getName());
-        }
-        Collections.sort(namesNode);
-        for (String name : namesNode) {
-            if (name.toCharArray()[0] > currentChar) {
-                break;
-            } else {
-                currentChar++;
-            }
-        }
-        return String.valueOf(currentChar);
+        return String.valueOf((char)('A' + listNodes.size()));
     }
 
     private void setRandomGraph(int countNodes, int countEdges) {
