@@ -44,6 +44,11 @@ public class Executor implements ExecutorInterface {
             }
         }
 
+        // fill diagonal with 0
+        for (int i = 0; i < verticesAmount; i++) {
+            matrix[i][i] = 0;
+        }
+
         notifyObservers();
     }
 
