@@ -8,22 +8,46 @@ import javafx.geometry.Pos;
 import javafx.geometry.VPos;
 import javafx.scene.control.Label;
 import javafx.scene.layout.*;
+import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 
-class AlgorithmMatrixView extends GridPane {
+class AlgorithmMatrixView extends VBox {
     private ExecutorInterface executor;
+    private GridPane matrix;
+    private HBox legendLayout;
 
     public AlgorithmMatrixView(ExecutorInterface executor) {
         this.executor = executor;
 
+        matrix = new GridPane();
+
+        Label legend = new Label("Legend:");
+        Label fromKLabel = new Label("from-k");
+        fromKLabel.setBackground(new Background(new BackgroundFill(fromKColor, CornerRadii.EMPTY, Insets.EMPTY)));
+        Label kToLabel = new Label("k-to");
+        kToLabel.setBackground(new Background(new BackgroundFill(kToColor, CornerRadii.EMPTY, Insets.EMPTY)));
+        Label fromToLabel = new Label("from-to");
+        fromToLabel.setBackground(new Background(new BackgroundFill(fromToColor, CornerRadii.EMPTY, Insets.EMPTY)));
+        legendLayout = new HBox(legend, fromKLabel, kToLabel, fromToLabel);
+
+        getChildren().addAll(matrix, legendLayout);
+
+        matrix.setAlignment(Pos.CENTER);
+        legendLayout.setAlignment(Pos.CENTER);
+        legendLayout.setSpacing(Gui.SPACING);
+        setAlignment(Pos.CENTER);
+        setSpacing(Gui.PADDING);
+
         executor.addObserver(this::updateMatrix);
         updateMatrix();
-
-        setAlignment(Pos.CENTER);
     }
 
+    private final Color fromKColor = new Color(0, 0, 1, 0.1);
+    private final Color kToColor = new Color(0, 0, 1, 0.2);
+    private final Color fromToColor = new Color(1, 0.7, 0, 0.3);
+
     private void updateMatrix() {
-        getChildren().clear();
+        matrix.getChildren().clear();
         int verticesAmount = executor.getVerticesAmount();
 
         for (int i = 0; i < verticesAmount; i++) {
@@ -39,8 +63,8 @@ class AlgorithmMatrixView extends GridPane {
             vHeader.setStyle("-fx-border-width: 0 1 0 0; -fx-border-color: black;");
             hHeader.setPadding(new Insets(Gui.SPACING));
             hHeader.setStyle("-fx-border-width: 0 0 1 0; -fx-border-color: black;");
-            add(vHeader, 0, i + 1);
-            add(hHeader, i + 1, 0);
+            matrix.add(vHeader, 0, i + 1);
+            matrix.add(hHeader, i + 1, 0);
         }
 
 
@@ -54,14 +78,19 @@ class AlgorithmMatrixView extends GridPane {
             toLabel.setFont(new Font(10));
             StackPane.setAlignment(toLabel, Pos.CENTER_RIGHT);
             firstCellLayout.getChildren().addAll(fromLabel, toLabel);
-            add(firstCellLayout, 0, 0);
+            matrix.add(firstCellLayout, 0, 0);
+            legendLayout.setVisible(true);
         }
         else {
             Label noVerticesLabel = new Label("No vertices to visualize");
             noVerticesLabel.setMinHeight(100);
-            add(noVerticesLabel, 0, 0);
+            matrix.add(noVerticesLabel, 0, 0);
+            legendLayout.setVisible(false);
         }
 
+        int algorithmFrom = executor.getFrom();
+        int algorithmTo = executor.getTo();
+        int algorithmK = executor.getK();
         for (int from = 0; from < verticesAmount; from++) {
             for (int to = 0; to < verticesAmount; to++) {
                 Integer pathLength = executor.getPathLength(new PathEnds(from, to));
@@ -71,9 +100,16 @@ class AlgorithmMatrixView extends GridPane {
                     cell.setText("∞");
                 else
                     cell.setText(pathLength.toString());
-                HBox cellLayout = new HBox(cell);
-                cellLayout.setAlignment(Pos.CENTER);
-                add(cellLayout, to + 1, from + 1);
+                GridPane.setHalignment(cell, HPos.CENTER);
+
+                if (from == algorithmFrom && to == algorithmTo)
+                    cell.setBackground(new Background(new BackgroundFill(fromToColor, CornerRadii.EMPTY, Insets.EMPTY)));
+                else if (from == algorithmFrom && to == algorithmK)
+                    cell.setBackground(new Background(new BackgroundFill(fromKColor, CornerRadii.EMPTY, Insets.EMPTY)));
+                else if (from == algorithmK && to == algorithmTo)
+                    cell.setBackground(new Background(new BackgroundFill(kToColor, CornerRadii.EMPTY, Insets.EMPTY)));
+
+                matrix.add(cell, to + 1, from + 1);
             }
         }
     }
