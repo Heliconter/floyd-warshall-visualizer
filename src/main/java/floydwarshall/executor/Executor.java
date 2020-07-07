@@ -14,8 +14,6 @@ public class Executor implements ExecutorInterface {
 
     private ArrayList<ExecutorObserver> observers;
 
-    private boolean notificationsEnabled = true;
-
     public Executor() {
         matrix = new Integer[0][0];
         verticesAmount = 0;
@@ -32,7 +30,7 @@ public class Executor implements ExecutorInterface {
 
         matrix = new Integer[verticesAmount][verticesAmount];
 
-        // fill matrix with infinities (Integer.MAX_VALUE)
+        // fill matrix with infinities (represented by null)
         for (int i = 0; i < verticesAmount; i++) {
             for (int j = 0; j < verticesAmount; j++) {
                 matrix[i][j] = null;
@@ -66,6 +64,7 @@ public class Executor implements ExecutorInterface {
             stepBackward(amount);
         }
 
+        notifyObservers();
     };
 
     public int getK() {
@@ -81,14 +80,9 @@ public class Executor implements ExecutorInterface {
     }
 
     public void toEnd() {
-        notificationsEnabled = false;
-
         while (!isFinished()) {
-            step(100);
+            step(1000);
         }
-
-        notificationsEnabled = true;
-        notifyObservers();
     };
 
     public boolean isFinished() {
@@ -114,8 +108,6 @@ public class Executor implements ExecutorInterface {
             }
             nextCell();
         }
-
-        notifyObservers();
     }
 
     private void stepBackward(int amount) {
@@ -130,8 +122,6 @@ public class Executor implements ExecutorInterface {
             // restore previous value
             matrix[from][to] = history.pop();
         }
-
-        notifyObservers();
     }
 
     private void nextCell() {
@@ -155,10 +145,6 @@ public class Executor implements ExecutorInterface {
     }
 
     private void notifyObservers() {
-        if (!notificationsEnabled) {
-            return;
-        }
-
         for (ExecutorObserver observer : observers) {
             observer.stateChanged();
         }
