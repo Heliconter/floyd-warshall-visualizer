@@ -46,6 +46,26 @@ class AlgorithmMatrixView extends VBox {
     private final Color kToColor = new Color(0, 0, 1, 0.2);
     private final Color fromToColor = new Color(1, 0.7, 0, 0.3);
 
+    private HBox addColoredBackgroundFragment(HBox layout, Color color) {
+        if (layout == null)
+            layout = new HBox();
+        Region r = new Region();
+        r.setBackground(new Background(new BackgroundFill(color, CornerRadii.EMPTY, Insets.EMPTY)));
+        HBox.setHgrow(r, Priority.ALWAYS);
+        layout.getChildren().add(r);
+        return layout;
+    }
+    private HBox createBackground(int from, int to) {
+        HBox layout = null;
+        if (from == executor.getFrom() && to == executor.getTo())
+            layout = addColoredBackgroundFragment(layout, fromToColor);
+        if (from == executor.getFrom() && to == executor.getK())
+            layout = addColoredBackgroundFragment(layout, fromKColor);
+        if (from == executor.getK() && to == executor.getTo())
+            layout = addColoredBackgroundFragment(layout, kToColor);
+        return layout;
+    }
+
     private void updateMatrix() {
         matrix.getChildren().clear();
         int verticesAmount = executor.getVerticesAmount();
@@ -69,7 +89,6 @@ class AlgorithmMatrixView extends VBox {
             matrix.add(hHeader, i + 1, 0);
         }
 
-
         if (verticesAmount != 0) {
             StackPane firstCellLayout = new StackPane();
             firstCellLayout.setMinSize(32, 32);
@@ -90,9 +109,6 @@ class AlgorithmMatrixView extends VBox {
             legendLayout.setVisible(false);
         }
 
-        int algorithmFrom = executor.getFrom();
-        int algorithmTo = executor.getTo();
-        int algorithmK = executor.getK();
         for (int from = 0; from < verticesAmount; from++) {
             for (int to = 0; to < verticesAmount; to++) {
                 Integer pathLength = executor.getPathLength(new PathEnds(from, to));
@@ -105,12 +121,9 @@ class AlgorithmMatrixView extends VBox {
                     cell.setText(pathLength.toString());
                 GridPane.setHalignment(cell, HPos.CENTER);
 
-                if (from == algorithmFrom && to == algorithmTo)
-                    cell.setBackground(new Background(new BackgroundFill(fromToColor, CornerRadii.EMPTY, Insets.EMPTY)));
-                else if (from == algorithmFrom && to == algorithmK)
-                    cell.setBackground(new Background(new BackgroundFill(fromKColor, CornerRadii.EMPTY, Insets.EMPTY)));
-                else if (from == algorithmK && to == algorithmTo)
-                    cell.setBackground(new Background(new BackgroundFill(kToColor, CornerRadii.EMPTY, Insets.EMPTY)));
+                HBox background = createBackground(from, to);
+                if (background != null)
+                    matrix.add(background, to + 1, from + 1);
 
                 matrix.add(cell, to + 1, from + 1);
             }
