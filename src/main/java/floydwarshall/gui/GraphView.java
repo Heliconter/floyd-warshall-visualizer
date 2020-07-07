@@ -1,6 +1,10 @@
 package floydwarshall.gui;
 
 import floydwarshall.executor.PathEnds;
+import floydwarshall.saveload.EdgeInfrom;
+import floydwarshall.saveload.GraphInform;
+import floydwarshall.saveload.NodeInform;
+import floydwarshall.saveload.SaveLoadManager;
 import javafx.event.EventHandler;
 import javafx.event.ActionEvent;
 import javafx.geometry.Insets;
@@ -13,6 +17,9 @@ import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.SimpleDoubleProperty;
+import javafx.stage.DirectoryChooser;
+import javafx.stage.FileChooser;
+import javafx.stage.Stage;
 import javafx.util.Duration;
 import floydwarshall.executor.ExecutorInterface;
 import floydwarshall.executor.Edge;
@@ -21,11 +28,13 @@ import floydwarshall.gui.graphshapes.Line;
 import floydwarshall.gui.graphshapes.Math;
 import floydwarshall.gui.graphshapes.Node;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
 
 public class GraphView extends VBox {
     ExecutorInterface executor;
+    Stage stage;
 
     enum PROGRAM_STATE {
         ADD, DRAG, DELETE, ADD_LINES, DELETE_LINES
@@ -46,6 +55,8 @@ public class GraphView extends VBox {
 
     private GravitySimulation gravitySimulation;
     private GravityCenterPoint gravityCenter;
+    private SaveLoadManager manager;
+
 
     class GravityCenterPoint extends Node {
         private DoubleProperty x;
@@ -72,8 +83,10 @@ public class GraphView extends VBox {
         }
     }
 
-    public GraphView(ExecutorInterface executor) {
+    public GraphView(ExecutorInterface executor, Stage stage) {
         this.executor = executor;
+        this.stage = stage;
+        manager = new SaveLoadManager();
 
         gravitySimulation = new GravitySimulation();
         gravityCenter = new GravityCenterPoint();
@@ -104,6 +117,8 @@ public class GraphView extends VBox {
         button4.setToggleGroup(group);
         button5.setToggleGroup(group);
         Button random = new Button("random");
+        Button saveButton = new Button("save");
+        Button loadButton = new Button("load");
 
         button.setOnMouseClicked(new EventHandler<MouseEvent>() {
             @Override
@@ -143,16 +158,30 @@ public class GraphView extends VBox {
                 }
             });
         });
+        loadButton.setOnMouseClicked((MouseEvent event) -> {
+            loadGraphFromFile();
+        });
+        saveButton.setOnMouseClicked((MouseEvent event) -> {
+            saveGraphInFile();
+        });
 
         Insets insetForButton = new Insets(0, 0, 0, 5);
         Insets insetForButtonBox = new Insets(0, 0, 5, 0);
+        Insets insetForButtonBox2 = new Insets(5, 0, 5, 0);
 
-        HBox buttonBox = new HBox(11, button, button2, button3, button4, button5, random);
+
+        HBox buttonBox = new HBox(11, button, button2, button3, button4, button5);
         HBox.setMargin(button, insetForButton);
         buttonBox.setPadding(insetForButtonBox);
         HBox.setMargin(buttonBox, insetForButtonBox);
 
-        getChildren().addAll(buttonBox, scrollPane);
+
+        HBox buttonBox2 = new HBox(11, loadButton, saveButton, random);
+        HBox.setMargin(button, insetForButton);
+        buttonBox2.setPadding(insetForButtonBox2);
+        HBox.setMargin(buttonBox, insetForButtonBox);
+
+        getChildren().addAll(buttonBox, scrollPane, buttonBox2);
 
         pane.setOnMouseClicked((MouseEvent event) -> {
             if (event.isControlDown() && state == PROGRAM_STATE.DRAG) {
@@ -348,7 +377,7 @@ public class GraphView extends VBox {
 
         for (Node node : listNodes) {
             node.addEventHandler(MouseEvent.MOUSE_ENTERED, event -> {
-                showPathLabels(((Node)event.getSource()).getIndex());
+                showPathLabels(((Node) event.getSource()).getIndex());
             });
         }
         for (Node node : listNodes) {
@@ -363,6 +392,7 @@ public class GraphView extends VBox {
             node.addPathLengthLabel(executor.getPathLength(new PathEnds(from, node.getIndex())));
         }
     }
+
     private void hidePathLabels() {
         for (Node node : listNodes) {
             node.removePathLengthLabel();
@@ -487,14 +517,7 @@ public class GraphView extends VBox {
         }
 
 
-        pane.getChildren().clear();
-        listLines.clear();
-        listNodes.clear();
-        dragNode = null;
-        currentLine = null;
-        isChouseNodeFirstForAddLines = false;
-        isDragState = false;
-        isDeleteState = false;
+        deleteGraph();
 
         for (int i = 0; i < countNodes; i++) {
             Node node = new Node(points.get(i).x, points.get(i).y);
@@ -555,7 +578,7 @@ public class GraphView extends VBox {
         }
     }
 
-    ArrayList<Node> getListUnrelatedNodes(Node mainNode) {
+    private ArrayList<Node> getListUnrelatedNodes(Node mainNode) {
         ArrayList<Node> list = new ArrayList<>();
         for (Node node : listNodes) {
             if (node != mainNode) {
@@ -565,7 +588,138 @@ public class GraphView extends VBox {
         return list;
     }
 
-    private void setState (PROGRAM_STATE state){
+    private void deleteGraph() {
+        pane.getChildren().clear();
+        listLines.clear();
+        listNodes.clear();
+        dragNode = null;
+        currentLine = null;
+        isChouseNodeFirstForAddLines = false;
+        isDragState = false;
+        isDeleteState = false;
+    }
+
+    private Node getNode(String name) {
+        for (Node node : listNodes) {
+            if (node.getName().equals(name)) {
+                return node;
+            }
+        }
+        return null;
+    }
+
+    private void loadGraphFromFile() {
+        FileChooser fileChooser = new FileChooser();
+        fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("All Files", "*.txt"));
+        File file = fileChooser.showOpenDialog(stage);
+        if (file != null) {
+            GraphInform graphInform = manager.loadGraphFromFile(file.getPath());
+            if (graphInform != null && graphInform.isDataReadCorrect()) {
+                deleteGraph();
+                ArrayList<NodeInform> nodes = graphInform.getNodes();
+                ArrayList<EdgeInfrom> edges = graphInform.getEdges();
+
+                for (int i = 0; i < nodes.size(); i++) {
+                    Node node = new Node(nodes.get(i).x, nodes.get(i).y);
+                    pane.getChildren().add(node);
+                    node.setName(String.valueOf(nodes.get(i).name));
+                    node.setIndex(listNodes.size());
+                    listNodes.add(node);
+                }
+
+                for (EdgeInfrom edge : edges) {
+                    Node endNode = getNode(String.valueOf(edge.nameStartNode));
+                    Node startNode = getNode(String.valueOf(edge.nameEndNode));
+
+                    Line line = new Line(startNode.getX(), startNode.getY(),
+                            startNode.getX(), startNode.getY(),
+                            endNode.getX(), endNode.getY());
+                    startNode.addLineStartPoint(line);
+                    endNode.addLineEndPoint(line);
+                    line.addObserver(this::edgeChanged);
+                    setConvexOnLines(line);
+                    listLines.add(line);
+                    pane.getChildren().add(line);
+                    line.setStartNode(startNode);
+                    line.setEndNode(endNode);
+                    line.setShapes();
+                    line.setWeight(edge.weight);
+                    line.getWeightText().setText(String.valueOf(edge.weight));
+                    pane.getChildren().add(line.getTriangle());
+                    pane.getChildren().add(line.getWeightText());
+                }
+                for (Node node : listNodes) {
+                    node.drawFront();
+                }
+                notifyGraphChanged();
+            } else {
+                showAlert("Error message", "File is incorrect.");
+            }
+        }
+    }
+
+    private void showAlert(String title, String message) {
+        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+        alert.setTitle(title);
+        alert.setHeaderText(null);
+        alert.setContentText(message);
+        alert.showAndWait();
+    }
+
+    private String getInformationAboutGraph() {
+        StringBuilder stringBuilder = new StringBuilder("Nodes:");
+        stringBuilder.append(listNodes.size()).append("\n");
+        for (Node node : listNodes) {
+            stringBuilder.append("(").append(node.getName()).append(",")
+                    .append(java.lang.Math.round(node.getX())).append(",")
+                    .append(java.lang.Math.round(node.getY())).append(")\n");
+        }
+        stringBuilder.append("Lines:").append(listLines.size()).append("\n");
+        for (Line line : listLines) {
+            stringBuilder.append("(").append(line.getStartNodeName()).append(",")
+                    .append(line.getEndNodeName()).append(",")
+                    .append(line.getWeight()).append(")\n");
+        }
+        stringBuilder.replace(stringBuilder.length(), stringBuilder.length(), "");
+        return stringBuilder.toString();
+    }
+
+    private void saveGraphInFile() {
+        if (listNodes.size() > 0) {
+        final DirectoryChooser directoryChooser = new DirectoryChooser();
+        Dialog dialog = new Dialog<>();
+        dialog.setHeaderText("Input file name");
+        GridPane grid = new GridPane();
+        grid.setHgap(10);
+        grid.setVgap(10);
+        TextField textField = new TextField();
+        textField.setPromptText("FileName");
+        Button button = new Button("save");
+        button.setOnMouseClicked((MouseEvent event) -> {
+                if (!textField.getText().trim().equals("")){
+                    File dir = directoryChooser.showDialog(stage);
+                    if (dir != null) {
+                    String path = dir.getAbsolutePath() + "\\" + textField.getText().trim() + ".txt";
+                    if (manager.saveGraphInFile(path, getInformationAboutGraph())) {
+                        showAlert("File save", "The file save successfully.");
+                    } else {
+                        showAlert("File save", "The file was not saved.");
+                    }
+                }}else {
+                    showAlert("File save", "the file doesn't have a name.");
+                }
+        });
+        grid.add(textField, 0, 0);
+        grid.add(button, 1, 0);
+        dialog.getDialogPane().setContent(grid);
+        dialog.getDialogPane().getButtonTypes().addAll(ButtonType.CANCEL);
+        dialog.showAndWait();
+        } else {
+            showAlert("File save", "The file was not saved. Graph is empty");
+        }
+    }
+
+    private void setState(PROGRAM_STATE state) {
         this.state = state;
     }
 }

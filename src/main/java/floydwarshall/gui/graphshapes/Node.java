@@ -79,6 +79,10 @@ public class Node extends StackPane implements Point {
         return text;
     }
 
+    public void setName(String name){
+        text.setText(name);
+    }
+
     public ArrayList<Line> getLinesStartPoint() {
         return linesStartPoint;
     }

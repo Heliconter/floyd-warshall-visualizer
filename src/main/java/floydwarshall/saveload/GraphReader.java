@@ -8,7 +8,7 @@ import java.util.regex.Pattern;
 class GraphReader {
 
     private Pattern nodeRegex = Pattern.compile("^\\(\\D,\\d+,\\d+\\)$");
-    private Pattern edgeRegex = Pattern.compile("^\\(\\D,\\D,\\d\\)$");
+    private Pattern edgeRegex = Pattern.compile("^\\(\\D,\\D,\\d+\\)$");
 
     GraphInform readGrpahFromFile(String path) throws Exception {
         int countNodes = 0;
@@ -31,11 +31,11 @@ class GraphReader {
             bufferedReader.close();
             isDataReadCorrect = true;
         } catch (java.io.FileNotFoundException | ExcRead ex) {
-            if (ex instanceof ExcRead) {
+            /*if (ex instanceof ExcRead) {
                 ((ExcRead) ex).myOwnExceptionMsg();
             } else {
                 System.out.println("File not found");
-            }
+            }*/
             localEdges = null;
             localNodes = null;
         }
