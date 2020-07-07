@@ -1,3 +1,5 @@
+![](https://github.com/Heliconter/floyd-warshall-visualizer/workflows/Build/badge.svg)
+
 # Floyd-Warshall visualizer
 
 ## Спецификация
