@@ -1,6 +1,7 @@
 package floydwarshall.gui;
 
 import floydwarshall.executor.PathEnds;
+import floydwarshall.gui.graphshapes.LocalPoint;
 import floydwarshall.saveload.EdgeInfrom;
 import floydwarshall.saveload.GraphInform;
 import floydwarshall.saveload.NodeInform;
@@ -483,24 +484,8 @@ public class GraphView extends VBox {
         return String.valueOf((char) ('A' + listNodes.size()));
     }
 
-    private void setRandomGraph(int countNodes, int countEdges) {
-        if (pane == null) return;
-
-        class LocalPoint {
-            private int x, y;
-
-            private LocalPoint(int x, int y) {
-                this.x = x;
-                this.y = y;
-            }
-        }
-
-        if (countEdges > countNodes * (countNodes - 1)) {
-            countEdges = countNodes * (countNodes - 1);
-        }
-
+    private ArrayList<LocalPoint> getPoints(int countNodes){
         ArrayList<LocalPoint> points = new ArrayList<>();
-
         int spacing = 140;
         int cols = (int) java.lang.Math.ceil(java.lang.Math.sqrt(countNodes));
         int rows = (int) java.lang.Math.ceil(countNodes / (double) cols);
@@ -515,7 +500,18 @@ public class GraphView extends VBox {
             x = startX;
             startY += spacing;
         }
+        return points;
+    }
 
+    private void setRandomGraph(int countNodes, int countEdges) {
+        if (pane == null) return;
+
+        if (countEdges > countNodes * (countNodes - 1)) {
+            countEdges = countNodes * (countNodes - 1);
+        }
+
+
+        ArrayList<LocalPoint> points = getPoints(countNodes);
 
         deleteGraph();
 
@@ -618,9 +614,10 @@ public class GraphView extends VBox {
                 deleteGraph();
                 ArrayList<NodeInform> nodes = graphInform.getNodes();
                 ArrayList<EdgeInfrom> edges = graphInform.getEdges();
+                ArrayList<LocalPoint> points = getPoints(nodes.size());
 
                 for (int i = 0; i < nodes.size(); i++) {
-                    Node node = new Node(nodes.get(i).x, nodes.get(i).y);
+                    Node node = new Node(points.get(i).x, points.get(i).y);
                     pane.getChildren().add(node);
                     node.setName(String.valueOf(nodes.get(i).name));
                     node.setIndex(listNodes.size());
@@ -670,9 +667,7 @@ public class GraphView extends VBox {
         StringBuilder stringBuilder = new StringBuilder("Nodes:");
         stringBuilder.append(listNodes.size()).append("\n");
         for (Node node : listNodes) {
-            stringBuilder.append("(").append(node.getName()).append(",")
-                    .append(java.lang.Math.round(node.getX())).append(",")
-                    .append(java.lang.Math.round(node.getY())).append(")\n");
+            stringBuilder.append("(").append(node.getName()).append(")\n");
         }
         stringBuilder.append("Lines:").append(listLines.size()).append("\n");
         for (Line line : listLines) {
@@ -686,34 +681,17 @@ public class GraphView extends VBox {
 
     private void saveGraphInFile() {
         if (listNodes.size() > 0) {
-        final DirectoryChooser directoryChooser = new DirectoryChooser();
-        Dialog dialog = new Dialog<>();
-        dialog.setHeaderText("Input file name");
-        GridPane grid = new GridPane();
-        grid.setHgap(10);
-        grid.setVgap(10);
-        TextField textField = new TextField();
-        textField.setPromptText("FileName");
-        Button button = new Button("save");
-        button.setOnMouseClicked((MouseEvent event) -> {
-                if (!textField.getText().trim().equals("")){
-                    File dir = directoryChooser.showDialog(stage);
-                    if (dir != null) {
-                    String path = dir.getAbsolutePath() + "\\" + textField.getText().trim() + ".txt";
-                    if (manager.saveGraphInFile(path, getInformationAboutGraph())) {
-                        showAlert("File save", "The file save successfully.");
-                    } else {
-                        showAlert("File save", "The file was not saved.");
-                    }
-                }}else {
-                    showAlert("File save", "the file doesn't have a name.");
+            FileChooser fileChooser = new FileChooser();
+            fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("All Files", "*.txt"));
+            File file = fileChooser.showSaveDialog(stage);
+            if (file!=null) {
+                System.out.println(file.getPath());
+                if (manager.saveGraphInFile(file.getAbsolutePath(), getInformationAboutGraph())) {
+                    showAlert("File save", "The file save successfully.");
+                } else {
+                    showAlert("File save", "The file was not saved.");
                 }
-        });
-        grid.add(textField, 0, 0);
-        grid.add(button, 1, 0);
-        dialog.getDialogPane().setContent(grid);
-        dialog.getDialogPane().getButtonTypes().addAll(ButtonType.CANCEL);
-        dialog.showAndWait();
+            }
         } else {
             showAlert("File save", "The file was not saved. Graph is empty");
         }

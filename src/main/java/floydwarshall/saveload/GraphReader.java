@@ -7,7 +7,7 @@ import java.util.regex.Pattern;
 
 class GraphReader {
 
-    private Pattern nodeRegex = Pattern.compile("^\\(\\D,\\d+,\\d+\\)$");
+    private Pattern nodeRegex = Pattern.compile("^\\(\\D\\)$");
     private Pattern edgeRegex = Pattern.compile("^\\(\\D,\\D,\\d+\\)$");
 
     GraphInform readGrpahFromFile(String path) throws Exception {
@@ -68,9 +68,9 @@ class GraphReader {
         if (string != null && pattern != null && pattern.matcher(string).find()) {
             string = string.replace("(", "");
             string = string.replace(")", "");
-            String[] strings = string.split(",");
-            if (Character.isLetter(strings[0].charAt(0))/* && isDigitString(strings[1]) && isDigitString(strings[2])*/) {
-                return new NodeInform(strings[0].charAt(0), Integer.valueOf(strings[1]), Integer.valueOf(strings[2]));
+//            String[] strings = string.split(",");
+            if (Character.isLetter(string.charAt(0)) && string.length()==1/* && isDigitString(strings[1]) && isDigitString(strings[2])*/) {
+                return new NodeInform(string.charAt(0)/*, Integer.valueOf(strings[1]), Integer.valueOf(strings[2])*/);
             }
         }
         throw new ExcRead("ReadNode exception");
