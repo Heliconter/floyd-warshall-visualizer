@@ -98,6 +98,10 @@ public class GraphView extends VBox {
         ToggleButton button4 = new ToggleButton("add line");
         ToggleButton button5 = new ToggleButton("delete line");
         ToggleGroup group = new ToggleGroup();
+        group.selectedToggleProperty().addListener((obsVal, oldVal, newVal) -> {
+            if (newVal == null)
+                oldVal.setSelected(true);
+        });
         button.setToggleGroup(group);
         button2.setToggleGroup(group);
         button3.setToggleGroup(group);
