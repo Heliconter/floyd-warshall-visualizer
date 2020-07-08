@@ -606,7 +606,7 @@ public class GraphView extends VBox {
 
     private void loadGraphFromFile() {
         FileChooser fileChooser = new FileChooser();
-        fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("All Files", "*.txt"));
+        //fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("All Files", "*.txt"));
         File file = fileChooser.showOpenDialog(stage);
         if (file != null) {
             GraphInform graphInform = manager.loadGraphFromFile(file.getPath());
@@ -683,7 +683,7 @@ public class GraphView extends VBox {
     private void saveGraphInFile() {
         if (listNodes.size() > 0) {
             FileChooser fileChooser = new FileChooser();
-            fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("All Files", "*.txt"));
+            //fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("All Files", "*.txt"));
             File file = fileChooser.showSaveDialog(stage);
             if (file!=null) {
                 if (manager.saveGraphInFile(file.getAbsolutePath(), getInformationAboutGraph())) {
