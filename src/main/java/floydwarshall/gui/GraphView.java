@@ -685,7 +685,6 @@ public class GraphView extends VBox {
             fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("All Files", "*.txt"));
             File file = fileChooser.showSaveDialog(stage);
             if (file!=null) {
-                System.out.println(file.getPath());
                 if (manager.saveGraphInFile(file.getAbsolutePath(), getInformationAboutGraph())) {
                     showAlert("File save", "The file save successfully.");
                 } else {
