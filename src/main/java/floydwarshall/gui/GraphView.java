@@ -627,23 +627,24 @@ public class GraphView extends VBox {
                 for (EdgeInfrom edge : edges) {
                     Node endNode = getNode(String.valueOf(edge.nameStartNode));
                     Node startNode = getNode(String.valueOf(edge.nameEndNode));
-
-                    Line line = new Line(startNode.getX(), startNode.getY(),
-                            startNode.getX(), startNode.getY(),
-                            endNode.getX(), endNode.getY());
-                    startNode.addLineStartPoint(line);
-                    endNode.addLineEndPoint(line);
-                    line.addObserver(this::edgeChanged);
-                    setConvexOnLines(line);
-                    listLines.add(line);
-                    pane.getChildren().add(line);
-                    line.setStartNode(startNode);
-                    line.setEndNode(endNode);
-                    line.setShapes();
-                    line.setWeight(edge.weight);
-                    line.getWeightText().setText(String.valueOf(edge.weight));
-                    pane.getChildren().add(line.getTriangle());
-                    pane.getChildren().add(line.getWeightText());
+                    if (endNode != null && startNode != null) {
+                        Line line = new Line(startNode.getX(), startNode.getY(),
+                                startNode.getX(), startNode.getY(),
+                                endNode.getX(), endNode.getY());
+                        startNode.addLineStartPoint(line);
+                        endNode.addLineEndPoint(line);
+                        line.addObserver(this::edgeChanged);
+                        setConvexOnLines(line);
+                        listLines.add(line);
+                        pane.getChildren().add(line);
+                        line.setStartNode(startNode);
+                        line.setEndNode(endNode);
+                        line.setShapes();
+                        line.setWeight(edge.weight);
+                        line.getWeightText().setText(String.valueOf(edge.weight));
+                        pane.getChildren().add(line.getTriangle());
+                        pane.getChildren().add(line.getWeightText());
+                    }
                 }
                 for (Node node : listNodes) {
                     node.drawFront();
