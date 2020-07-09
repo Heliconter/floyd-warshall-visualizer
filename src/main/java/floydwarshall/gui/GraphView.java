@@ -41,7 +41,7 @@ public class GraphView extends VBox {
         ADD, DRAG, DELETE, ADD_LINES, DELETE_LINES
     }
 
-    private PROGRAM_STATE state = PROGRAM_STATE.ADD;
+    private PROGRAM_STATE state = PROGRAM_STATE.DRAG;
     private Node dragNode = null;
     private ArrayList<Line> listLines = new ArrayList<>();
     private Line currentLine = null;
@@ -105,12 +105,12 @@ public class GraphView extends VBox {
         scrollPane.prefHeightProperty().bind(this.heightProperty());
 
 
-        ToggleButton button = new ToggleButton("add");
+        ToggleButton button = new ToggleButton("Drag");
         button.setSelected(true);
-        ToggleButton button2 = new ToggleButton("drag");
-        ToggleButton button3 = new ToggleButton("delete");
-        ToggleButton button4 = new ToggleButton("add line");
-        ToggleButton button5 = new ToggleButton("delete line");
+        ToggleButton button2 = new ToggleButton("Add node");
+        ToggleButton button3 = new ToggleButton("Delete node");
+        ToggleButton button4 = new ToggleButton("Add edge");
+        ToggleButton button5 = new ToggleButton("Delete edge");
         ToggleGroup group = new ToggleGroup();
         group.selectedToggleProperty().addListener((obsVal, oldVal, newVal) -> {
             if (newVal == null)
@@ -121,20 +121,20 @@ public class GraphView extends VBox {
         button3.setToggleGroup(group);
         button4.setToggleGroup(group);
         button5.setToggleGroup(group);
-        Button random = new Button("random");
-        Button saveButton = new Button("save");
-        Button loadButton = new Button("load");
+        Button random = new Button("Random");
+        Button saveButton = new Button("Save");
+        Button loadButton = new Button("Load");
 
         button.setOnMouseClicked(new EventHandler<MouseEvent>() {
             @Override
             public void handle(MouseEvent event) {
-                setState(PROGRAM_STATE.ADD);
+                setState(PROGRAM_STATE.DRAG);
             }
         });
         button2.setOnMouseClicked(new EventHandler<MouseEvent>() {
             @Override
             public void handle(MouseEvent event) {
-                setState(PROGRAM_STATE.DRAG);
+                setState(PROGRAM_STATE.ADD);
             }
         });
         button3.setOnMouseClicked(new EventHandler<MouseEvent>() {
